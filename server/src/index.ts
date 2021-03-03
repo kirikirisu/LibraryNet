@@ -1,7 +1,7 @@
 import "reflect-metadata";
 import { createConnection } from "typeorm";
-import { Test } from "./entities/Test";
 import { User } from "./entities/User";
+import { Book } from "./entities/Book";
 import express from "express";
 import { ApolloServer } from "apollo-server-express";
 import { buildSchema } from "type-graphql";
@@ -15,7 +15,7 @@ const main = async () => {
     password: "postgres",
     logging: true,
     synchronize: true,
-    entities: [Test, User],
+    entities: [User, Book],
   });
 
   const app = express();
@@ -24,6 +24,10 @@ const main = async () => {
     schema: await buildSchema({
       resolvers: [HelloResolver],
       validate: false,
+    }),
+    context: ({ req, res }) => ({
+      req,
+      res,
     }),
   });
 
