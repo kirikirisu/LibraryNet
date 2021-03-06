@@ -12,6 +12,8 @@ import { UserResolver } from "./resolvers/user";
 import { COOKIE_NAME, __prod__ } from "./constants";
 import { Library } from "./entities/Library";
 import { LibraryResolver } from "./resolvers/library";
+import { BookResolver } from "./resolvers/book";
+import { Book } from "./entities/Book";
 
 const main = async () => {
   const conn = await createConnection({
@@ -21,7 +23,7 @@ const main = async () => {
     password: "postgres",
     logging: true,
     synchronize: true,
-    entities: [User, Library],
+    entities: [User, Library, Book],
   });
 
   const app = express();
@@ -46,7 +48,7 @@ const main = async () => {
 
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
-      resolvers: [UserResolver, LibraryResolver],
+      resolvers: [UserResolver, LibraryResolver, BookResolver],
       validate: false,
     }),
     context: ({ req, res }) => ({
