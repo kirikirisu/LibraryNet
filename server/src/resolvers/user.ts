@@ -1,10 +1,18 @@
 import { User } from "../entities/User";
-import { Arg, Ctx, Field, Mutation, ObjectType, Resolver } from "type-graphql";
+import {
+  Arg,
+  Ctx,
+  Field,
+  Mutation,
+  ObjectType,
+  Query,
+  Resolver,
+} from "type-graphql";
 import argon2 from "argon2";
 import { getConnection } from "typeorm";
 import { MyContext } from "../types";
 import { validateRejister } from "../utils/validateRejister";
-import { UsernamePasswordInput } from "./UsernamePasswordInput";
+import { RegisterInput } from "./RegisterInput";
 import { COOKIE_NAME } from "../constants";
 
 @ObjectType()
@@ -26,9 +34,18 @@ class UserResponse {
 
 @Resolver(User)
 export class UserResolver {
+  @Query(() => User, { nullable: true })
+  me(@Ctx() { req }: MyContext) {
+    if (!req.session.userId) {
+      return null;
+    }
+
+    return User.findOne(req.session.userId);
+  }
+
   @Mutation(() => UserResponse)
   async register(
-    @Arg("options") options: UsernamePasswordInput,
+    @Arg("options") options: RegisterInput,
     @Ctx() { req }: MyContext
   ): Promise<UserResponse> {
     const errors = validateRejister(options);
@@ -106,7 +123,11 @@ export class UserResolver {
         ],
       };
     }
+
+    console.log("userID", user.id);
     req.session.userId = user.id;
+
+    console.log("req session", req.session.userId);
 
     return {
       user,

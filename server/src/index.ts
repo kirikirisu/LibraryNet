@@ -7,11 +7,11 @@ import connectRedis from "connect-redis";
 import session from "express-session";
 
 import { User } from "./entities/User";
-import { Book } from "./entities/Book";
 import { ApolloServer } from "apollo-server-express";
-import { HelloResolver } from "./resolvers/hello";
 import { UserResolver } from "./resolvers/user";
 import { COOKIE_NAME, __prod__ } from "./constants";
+import { Library } from "./entities/Library";
+import { LibraryResolver } from "./resolvers/library";
 
 const main = async () => {
   const conn = await createConnection({
@@ -21,7 +21,7 @@ const main = async () => {
     password: "postgres",
     logging: true,
     synchronize: true,
-    entities: [User, Book],
+    entities: [User, Library],
   });
 
   const app = express();
@@ -37,16 +37,16 @@ const main = async () => {
         maxAge: 1000 * 60 * 60 * 24 * 30 * 3, // 3 month
         httpOnly: true,
         sameSite: "lax",
-        secure: __prod__,
+        secure: false,
       },
       saveUninitialized: false,
-      secret: "hkjdfjkdff",
+      secret: "hkjdfjkdffiio",
     })
   );
 
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
-      resolvers: [HelloResolver, UserResolver],
+      resolvers: [UserResolver, LibraryResolver],
       validate: false,
     }),
     context: ({ req, res }) => ({
@@ -59,7 +59,6 @@ const main = async () => {
 
   app.listen(4000, () => {
     console.log("server start on port 4000");
-    console.log("node-env", process.env.NODE_ENV);
   });
 };
 
