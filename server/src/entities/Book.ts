@@ -4,8 +4,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  JoinColumn,
-  OneToOne,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
@@ -36,17 +35,20 @@ export class Book extends BaseEntity {
 
   @Field()
   @Column()
-  ownerId!: string;
-
-  @OneToOne(() => User)
-  @JoinColumn()
-  owner: User;
+  available!: boolean;
 
   @Field()
+  @Column()
+  ownerId!: number;
+
+  @ManyToOne(() => User, (user) => user.books)
+  owner: User;
+
+  @Field(() => String)
   @CreateDateColumn()
   createdAt: Date;
 
-  @Field()
+  @Field(() => String)
   @UpdateDateColumn()
   updatedAt: Date;
 }

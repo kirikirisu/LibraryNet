@@ -6,6 +6,7 @@ import {
   Entity,
   JoinColumn,
   OneToOne,
+  PrimaryColumn,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
@@ -31,18 +32,18 @@ export class Library extends BaseEntity {
   organization!: boolean;
 
   @Field()
-  @Column()
+  @PrimaryColumn()
   adminId: number;
 
   @OneToOne(() => User)
   @JoinColumn()
   admin: User;
 
-  @Field()
+  @Field(() => String)
   @CreateDateColumn()
   createdAt: Date;
 
-  @Field()
+  @Field(() => String)
   @UpdateDateColumn()
   updatedAt: Date;
 }

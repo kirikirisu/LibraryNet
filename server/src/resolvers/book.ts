@@ -27,7 +27,7 @@ class BookInput {
   inforLink: string;
 
   @Field()
-  libraryId: number;
+  available: boolean;
 }
 
 @Resolver()
@@ -41,11 +41,13 @@ export class BookResolver {
     // insert & select
     return Book.create({
       ...input,
+      ownerId: req.session.userId,
     }).save();
   }
 
-  @Query(() => String)
-  helloBook() {
-    return "this is book resolver";
+  @Query(() => [Book])
+  async books() {
+    const books = await Book.find({});
+    return books;
   }
 }
