@@ -25,6 +25,7 @@ const main = async () => {
     synchronize: true,
     entities: [User, Library, Book],
   });
+  await Library.delete({});
 
   const app = express();
   const RedisStore = connectRedis(session);

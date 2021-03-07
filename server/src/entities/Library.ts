@@ -5,12 +5,10 @@ import {
   CreateDateColumn,
   Entity,
   JoinColumn,
-  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
-import { Book } from "./Book";
 import { User } from "./User";
 
 @ObjectType()
@@ -34,14 +32,11 @@ export class Library extends BaseEntity {
 
   @Field()
   @Column()
-  ownerId: number;
+  adminId: number;
 
   @OneToOne(() => User)
   @JoinColumn()
-  owner: User;
-
-  @OneToMany(() => Book, (book) => book.library)
-  books: Book[];
+  admin: User;
 
   @Field()
   @CreateDateColumn()

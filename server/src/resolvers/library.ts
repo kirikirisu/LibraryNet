@@ -34,7 +34,7 @@ export class LibraryResolver {
   ): Promise<Library> {
     return Library.create({
       ...input,
-      ownerId: req.session.userId,
+      adminId: req.session.userId,
     }).save();
   }
 
@@ -45,9 +45,6 @@ export class LibraryResolver {
   async librarys() {
     const librarys = await Library.find({});
     console.log(librarys);
-    if (!librarys) {
-      return null;
-    }
 
     return librarys;
   }
