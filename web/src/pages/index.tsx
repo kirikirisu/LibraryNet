@@ -1,7 +1,7 @@
 import { useLibrarysQuery } from '../generated/graphql';
 import withApollo from '../utils/withApollo'
 
-const Index: React.FC<{}> = ({ }) => {
+const Index: any = ({ }) => {
   const { data, loading, error } = useLibrarysQuery()
 
   if (loading) return <p>Loading...</p>;
