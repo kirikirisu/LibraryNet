@@ -1,0 +1,9 @@
+query Librarys {
+  librarys {
+    id
+    description
+    icon
+    organization
+    adminId
+  }
+}

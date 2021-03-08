@@ -5,6 +5,7 @@ import { buildSchema } from "type-graphql";
 import Redis from "ioredis";
 import connectRedis from "connect-redis";
 import session from "express-session";
+import cors from "cors";
 
 import { User } from "./entities/User";
 import { ApolloServer } from "apollo-server-express";
@@ -29,6 +30,13 @@ const main = async () => {
   const app = express();
   const RedisStore = connectRedis(session);
   const redis = new Redis();
+
+  app.use(
+    cors({
+      origin: "http://localhost:3000",
+      credentials: true,
+    })
+  );
 
   app.use(
     session({
@@ -57,7 +65,7 @@ const main = async () => {
     }),
   });
 
-  apolloServer.applyMiddleware({ app });
+  apolloServer.applyMiddleware({ app, cors: false });
 
   app.listen(4000, () => {
     console.log("server start on port 4000");
