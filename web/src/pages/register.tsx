@@ -2,32 +2,32 @@ import React from 'react';
 import { useRegisterMutation } from '../generated/graphql';
 import { Field, Form, Formik } from 'formik'
 import { Button } from '@chakra-ui/button';
-import { FormControl, FormLabel, FormErrorMessage } from '@chakra-ui/react';
-import { Input } from '@chakra-ui/input';
 import { InputField } from '../components/InputField';
-import ResponsiveWrapper from '../components/ResponsiveWrapper';
+import { FormContainer } from '../components/FormContainer';
+import { Box } from '@chakra-ui/layout';
+import { toErrorMap } from '../utils/toErrorMap';
+import withApollo from '../utils/withApollo'
+import { useRouter } from 'next/router'
 
 interface registerProps {
 
 }
 
 const Register: React.FC<registerProps> = ({ }) => {
-  function validateName(value) {
-    let error
-    if (!value) {
-      error = "Name is required"
-    } else if (value.toLowerCase() !== "naruto") {
-      error = "Jeez! You're not a fan 😱"
-    }
-    return error
-  }
+  const router = useRouter()
+  const [register] = useRegisterMutation()
 
   return (
-    <ResponsiveWrapper>
+    <FormContainer>
       <Formik
-        initialValues={{ username: "" }}
-        onSubmit={(values, actions) => {
-          console.log(values)
+        initialValues={{ username: "", email: "", password: "" }}
+        onSubmit={async (values, { setErrors }) => {
+          const response = await register({ variables: { options: values } })
+          if (response.data?.register.errors) {
+            setErrors(toErrorMap(response.data.register.errors))
+          } else if (response.data?.register.user) {
+            router.push("/")
+          }
         }}
       >
         {(props) => (
@@ -36,6 +36,18 @@ const Register: React.FC<registerProps> = ({ }) => {
               name="username"
               placeholder="username"
               label="Username"
+            />
+            <Box my="5">
+              <InputField
+                name="email"
+                placeholder="email"
+                label="Email"
+              />
+            </Box>
+            <InputField
+              name="password"
+              placeholder="password"
+              label="Password"
             />
             <Button
               mt={4}
@@ -48,8 +60,8 @@ const Register: React.FC<registerProps> = ({ }) => {
           </Form>
         )}
       </Formik>
-    </ResponsiveWrapper>
+    </FormContainer>
   )
 }
 
-export default Register;
+export default withApollo({ ssr: false })(Register);

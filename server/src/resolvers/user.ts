@@ -11,7 +11,7 @@ import {
 import argon2 from "argon2";
 import { getConnection } from "typeorm";
 import { MyContext } from "../types";
-import { validateRejister } from "../utils/validateRejister";
+import { validateRejister } from "../utils/validateRegister";
 import { RegisterInput } from "./RegisterInput";
 import { COOKIE_NAME } from "../constants";
 

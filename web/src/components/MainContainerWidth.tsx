@@ -4,7 +4,7 @@ interface ResponsiveWrapperProps {
   children: React.ReactNode
 }
 
-const ResponsiveWrapper: React.FC<ResponsiveWrapperProps> = ({ children }) => {
+const MainContainerWidth: React.FC<ResponsiveWrapperProps> = ({ children }) => {
   return (
     <Box width={{ base: 'full', md: '4xl' }} mx="auto" backgroundColor={{ base: 'aqua', md: 'bisque' }}>
       {children}
@@ -12,4 +12,4 @@ const ResponsiveWrapper: React.FC<ResponsiveWrapperProps> = ({ children }) => {
   );
 }
 
-export default ResponsiveWrapper;
+export default MainContainerWidth;

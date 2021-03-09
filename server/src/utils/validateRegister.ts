@@ -1,20 +1,20 @@
 import { RegisterInput } from "../resolvers/RegisterInput";
 
 export const validateRejister = (options: RegisterInput) => {
-  if (!options.email.includes("@")) {
-    return [
-      {
-        field: "email",
-        message: "invalid email",
-      },
-    ];
-  }
-
   if (options.username.length <= 2) {
     return [
       {
         field: "username",
         message: "length must be greater than 2",
+      },
+    ];
+  }
+
+  if (!options.email.includes("@")) {
+    return [
+      {
+        field: "email",
+        message: "invalid email",
       },
     ];
   }
