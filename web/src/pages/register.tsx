@@ -1,4 +1,3 @@
-import React from 'react';
 import { useRegisterMutation } from '../generated/graphql';
 import { Field, Form, Formik } from 'formik'
 import { Button } from '@chakra-ui/button';

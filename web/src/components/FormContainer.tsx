@@ -9,7 +9,6 @@ export const FormContainer: React.FC<FormContainerProps> = ({ children }) => {
     <Flex
       height="100vh"
       widht="100vw"
-      backgroundColor="red.100"
       justify="center"
       align="center"
     >
