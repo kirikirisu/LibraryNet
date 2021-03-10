@@ -1,6 +1,7 @@
-import { Box, Image, Text, Link } from "@chakra-ui/react"
+import { Image, Box, Img, Text, Link } from "@chakra-ui/react"
 import { useLibrarysQuery } from '../generated/graphql';
 import withApollo from '../utils/withApollo'
+import NextLink from 'next/link'
 
 import { Header } from '../components/Header'
 import MainContainerWidth from "../components/MainContainerWidth";
@@ -18,39 +19,41 @@ const Index: any = ({ }) => {
       <MainContainerWidth>
         {
           data.librarys?.map((lib) => (
-            <Box bg="teal.50" p={2} display={{ md: "flex" }}>
+            <Box key={lib.id} bg="teal.50" p={2} mb={4} display={{ md: "flex" }} borderRadius="sm">
               <Box flexShrink={0}>
-                <Image
+                <Img
+                  width={{ md: 48 }}
+                  height={{ md: 48 }}
+                  objectFit="cover"
                   borderRadius="lg"
-                  width={{ md: 40 }}
-                  src="https://bit.ly/2jYM25F"
-                  alt="Woman paying for a purchase"
+                  src={lib.icon}
+                  alt="Library image"
                 />
               </Box>
               <Box mt={{ base: 4, md: 0 }} ml={{ md: 6 }}>
                 <Text
                   fontWeight="bold"
                   textTransform="uppercase"
-                  fontSize="sm"
+                  fontSize="md"
                   letterSpacing="wide"
                   color="teal.600"
                 >
-                  Marketing
-              </Text>
-                <Link
-                  mt={1}
-                  display="block"
-                  fontSize="lg"
-                  lineHeight="normal"
-                  fontWeight="semibold"
-                  href="#"
-                >
-                  Finding customers for your new business
-              </Link>
-                <Text mt={2} color="gray.500">
-                  Getting a new business off the ground is a lot of hard work. Here are five
-                  ideas you can use to find your first customers.
-              </Text>
+                  {lib.organization ? "organization" : "individual"}
+                </Text>
+                <NextLink href={`/shelf/${lib.adminId}`}>
+                  <Link
+                    mt={1}
+                    display="block"
+                    fontSize="xl"
+                    lineHeight="normal"
+                    fontWeight="semibold"
+                  >
+                    {lib.title}
+                  </Link>
+                </NextLink>
+                <Text mt={2} color="gray.500" fontSize="md">
+                  {lib.description}
+                </Text>
               </Box>
             </Box>
           ))

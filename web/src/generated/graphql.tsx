@@ -21,6 +21,11 @@ export type Query = {
   books: Array<Book>;
 };
 
+
+export type QueryBooksArgs = {
+  id: Scalars['Int'];
+};
+
 export type User = {
   __typename?: 'User';
   id: Scalars['Float'];
@@ -166,6 +171,19 @@ export type RegisterMutation = (
   ) }
 );
 
+export type BooksQueryVariables = Exact<{
+  id: Scalars['Int'];
+}>;
+
+
+export type BooksQuery = (
+  { __typename?: 'Query' }
+  & { books: Array<(
+    { __typename?: 'Book' }
+    & Pick<Book, 'id' | 'description' | 'title' | 'img' | 'inforLink' | 'available' | 'ownerId'>
+  )> }
+);
+
 export type LibrarysQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -300,6 +318,47 @@ export function useRegisterMutation(baseOptions?: Apollo.MutationHookOptions<Reg
 export type RegisterMutationHookResult = ReturnType<typeof useRegisterMutation>;
 export type RegisterMutationResult = Apollo.MutationResult<RegisterMutation>;
 export type RegisterMutationOptions = Apollo.BaseMutationOptions<RegisterMutation, RegisterMutationVariables>;
+export const BooksDocument = gql`
+    query Books($id: Int!) {
+  books(id: $id) {
+    id
+    description
+    title
+    img
+    inforLink
+    available
+    ownerId
+  }
+}
+    `;
+
+/**
+ * __useBooksQuery__
+ *
+ * To run a query within a React component, call `useBooksQuery` and pass it any options that fit your needs.
+ * When your component renders, `useBooksQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useBooksQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useBooksQuery(baseOptions: Apollo.QueryHookOptions<BooksQuery, BooksQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<BooksQuery, BooksQueryVariables>(BooksDocument, options);
+      }
+export function useBooksLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<BooksQuery, BooksQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<BooksQuery, BooksQueryVariables>(BooksDocument, options);
+        }
+export type BooksQueryHookResult = ReturnType<typeof useBooksQuery>;
+export type BooksLazyQueryHookResult = ReturnType<typeof useBooksLazyQuery>;
+export type BooksQueryResult = Apollo.QueryResult<BooksQuery, BooksQueryVariables>;
 export const LibrarysDocument = gql`
     query Librarys {
   librarys {
