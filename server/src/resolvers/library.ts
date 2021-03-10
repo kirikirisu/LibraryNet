@@ -1,4 +1,4 @@
-import { isAuth } from "../middleware/isAuth";
+import { isAuth } from '../middleware/isAuth';
 import {
   Arg,
   Ctx,
@@ -8,12 +8,15 @@ import {
   Query,
   Resolver,
   UseMiddleware,
-} from "type-graphql";
-import { MyContext } from "src/types";
-import { Library } from "../entities/Library";
+} from 'type-graphql';
+import { MyContext } from 'src/types';
+import { Library } from '../entities/Library';
 
 @InputType()
 class LibraryInput {
+  @Field()
+  title: string;
+
   @Field()
   description: string;
 
@@ -31,7 +34,7 @@ export class LibraryResolver {
   @Mutation(() => Library)
   @UseMiddleware(isAuth)
   async createLibrary(
-    @Arg("input") input: LibraryInput,
+    @Arg('input') input: LibraryInput,
     @Ctx() { req }: MyContext
   ): Promise<Library> {
     return Library.create({

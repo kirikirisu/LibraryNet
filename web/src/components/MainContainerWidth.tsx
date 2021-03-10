@@ -6,7 +6,13 @@ interface ResponsiveWrapperProps {
 
 const MainContainerWidth: React.FC<ResponsiveWrapperProps> = ({ children }) => {
   return (
-    <Box width={{ base: 'full', md: '4xl' }} mx="auto" backgroundColor={{ base: 'aqua', md: 'bisque' }}>
+    <Box
+      maxW="4xl"
+      mx="auto"
+      py="4"
+      px="2"
+      backgroundColor={{ base: 'aqua', md: 'bisque' }}
+    >
       {children}
     </Box>
   );

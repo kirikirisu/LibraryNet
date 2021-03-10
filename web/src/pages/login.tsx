@@ -22,7 +22,13 @@ const Login: React.FC<loginProps> = ({ }) => {
       <Formik
         initialValues={{ usernameOrEmail: "", password: "" }}
         onSubmit={async (values, { setErrors }) => {
-          const response = await login({ variables: { ...values } })
+          const response = await login({
+            variables: { ...values },
+            update: (caches, { data }) => {
+              console.log("caches", caches)
+              console.log("data", data)
+            },
+          })
           if (response.data?.login.errors) {
             setErrors(toErrorMap(response.data.login.errors))
           } else if (response.data?.login.user) {

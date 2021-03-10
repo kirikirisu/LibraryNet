@@ -1,6 +1,7 @@
 query Librarys {
   librarys {
     id
+    title
     description
     icon
     organization
