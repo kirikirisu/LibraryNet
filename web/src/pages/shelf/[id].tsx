@@ -1,11 +1,10 @@
 import { Box } from '@chakra-ui/react';
-import { useRouter } from 'next/router'
 import { useBooksQuery } from '../../generated/graphql'
+import { useGetId } from '../../utils/useGetId';
 import withApollo from '../../utils/withApollo'
 
 const Shelf: React.FC<{}> = ({ }) => {
-    const router = useRouter();
-    const intId = typeof router.query.id === "string" ? parseInt(router.query.id) : -1;
+    const intId = useGetId()
 
     const { data, loading, error } = useBooksQuery({
         skip: intId === -1,

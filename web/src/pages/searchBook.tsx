@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { Box, Button, Input } from "@chakra-ui/react"
+import { Flex, Box, Button, Input } from "@chakra-ui/react"
 import router from 'next/router'
 import { SearchResult } from '../components/SearchResult'
 
@@ -11,25 +11,27 @@ const SearchBook: React.FC<{}> = ({ }) => {
   const handlePush = () => setKeyword(searchValue);
 
   return (
-    <Box maxW="xl" mx="auto">
-      <Input
-        value={searchValue}
-        onChange={handleChange}
-        placeholder="Search Book"
-        focusBorderColor="teal.500"
-      />
-      <Button
-        mt={4}
-        colorScheme="teal"
-        isLoading={false}
-        onClick={handlePush}
-      >
-        search
-      </Button>
-      <Box>
-        <SearchResult keyword={keyword} />
+    <>
+      <Box maxW="xl" mx="auto" mt="16">
+        <Flex align="center">
+          <Input
+            value={searchValue}
+            onChange={handleChange}
+            placeholder="Search Book"
+            focusBorderColor="teal.500"
+          />
+          <Button
+            ml={2}
+            colorScheme="teal"
+            isLoading={false}
+            onClick={handlePush}
+          >
+            search
+          </Button>
+        </Flex>
       </Box>
-    </Box>
+      <SearchResult keyword={keyword} />
+    </>
   );
 }
 
