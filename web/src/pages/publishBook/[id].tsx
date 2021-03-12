@@ -1,10 +1,13 @@
-// このページでは、SSRをする。
-// apolloのqueryによるフェッチをサーバサイドで実行するわけではなく、
-// google books apiをサーバサイドで実行する。
-// そのため、普通にgetServerSidePropsを使う。
-import { GetServerSideProps } from 'next'
+// google books apiをサーバー側でフェッチして、apolloのフェッチをクライアント側で行いうこともできそう
+// 簡単にするためにどちらもクライアント側でフェッチする
+// import { GetServerSideProps } from 'next'
+import useSWR from 'swr'
+import axios from 'axios'
 import { Button, Link, Flex, Box, Img, Image, Heading, Text } from '@chakra-ui/react'
+import { useRouter } from 'next/router'
 import { FALLBACK_IMG, FALLBACK_TXT } from '../../constants';
+import { BookInput, usePublishBookMutation } from '../../generated/graphql';
+import withApollo from '../../utils/withApollo'
 
 const BOOKS_API_BASE_URL = "https://www.googleapis.com/books/v1/volumes/";
 
@@ -29,15 +32,28 @@ const spaceTol = (t: string) => {
   return rp
 }
 
-const PublishBook = ({ book }: any) => {
-  const { title, imageLinks, description, infoLink } = book.volumeInfo
-  // console.log("book", book.volumeInfo)
+const fetcher = (url: string) => axios.get(url).then(res => res.data)
+
+const PublishBook = () => {
+  const router = useRouter()
+  const [publishBook] = usePublishBookMutation()
+
+  const { id } = router.query
+  const url = BOOKS_API_BASE_URL + id
+  // skip when id is undefined
+  const { data, error } = useSWR(id === undefined ? null : url, fetcher)
+
+  if (error) return <div>failed to load</div>
+  if (!data) return <div>loading...</div>
+
+  const { title, imageLinks, description, infoLink } = data.volumeInfo
   const tit = spaceTol(title)
   const desc = deleteTags(description)
   const imgLin = imageLinks ? imageLinks.smallThumbnail : FALLBACK_IMG
 
-  const publish = () => {
-    const sendObj = {
+
+  const publish = async () => {
+    const sendObj: BookInput = {
       title: tit,
       description: desc,
       img: imgLin,
@@ -45,6 +61,17 @@ const PublishBook = ({ book }: any) => {
       available: true,
     }
     console.log("sendObj", sendObj)
+    try {
+      const res = await publishBook({ variables: { input: { ...sendObj } } })
+      if (res.data?.publishBook.errors) {
+        alert(res.data.publishBook.errors)
+      } else if (res.data?.publishBook.book) {
+        router.push("/")
+      }
+    } catch (err) {
+      alert(err)
+    }
+
   }
 
   return (
@@ -80,7 +107,7 @@ const PublishBook = ({ book }: any) => {
               href={infoLink}
             >
               more info
-            </Link>
+              </Link>
             <Button
               alignSelf="flex-end"
               mt="6"
@@ -90,7 +117,7 @@ const PublishBook = ({ book }: any) => {
               onClick={publish}
             >
               publish
-            </Button>
+              </Button>
           </Flex>
         </Box>
       </Flex>
@@ -98,16 +125,16 @@ const PublishBook = ({ book }: any) => {
   )
 }
 
-export const getServerSideProps: GetServerSideProps = async (ctx) => {
-  const { id } = ctx.query
-  const res = await fetch(BOOKS_API_BASE_URL + id)
-  const book = await res.json()
+// export const getServerSideProps: GetServerSideProps = async (ctx) => {
+//   const { id } = ctx.query
+//   const res = await fetch(BOOKS_API_BASE_URL + id)
+//   const book = await res.json()
 
-  return {
-    props: {
-      book,
-    }
-  }
-}
+//   return {
+//     props: {
+//       book,
+//     }
+//   }
+// }
 
-export default PublishBook;
+export default withApollo({ ssr: false })(PublishBook)

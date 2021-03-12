@@ -8,6 +8,7 @@ import {
   InputType,
   Int,
   Mutation,
+  ObjectType,
   Query,
   Resolver,
   UseMiddleware,
@@ -31,19 +32,30 @@ class BookInput {
   available: boolean;
 }
 
+@ObjectType()
+class BookResponse {
+  @Field(() => String, { nullable: true })
+  errors?: String;
+
+  @Field(() => Book, { nullable: true })
+  book?: Book;
+}
+
 @Resolver()
 export class BookResolver {
-  @Mutation(() => Book)
+  @Mutation(() => BookResponse)
   @UseMiddleware(isAuth)
-  publishBook(
+  async publishBook(
     @Arg('input') input: BookInput,
     @Ctx() { req }: MyContext
-  ): Promise<Book> {
+  ): Promise<BookResponse> {
     // insert & select
-    return Book.create({
+    const book = await Book.create({
       ...input,
       ownerId: req.session.userId,
     }).save();
+
+    return { book };
   }
 
   @Query(() => [Book])

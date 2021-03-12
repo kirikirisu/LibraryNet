@@ -67,7 +67,7 @@ export type Mutation = {
   login: UserResponse;
   logout: Scalars['Boolean'];
   createLibrary: Library;
-  publishBook: Book;
+  publishBook: BookResponse;
 };
 
 
@@ -116,6 +116,12 @@ export type LibraryInput = {
   organization: Scalars['Boolean'];
 };
 
+export type BookResponse = {
+  __typename?: 'BookResponse';
+  errors?: Maybe<Scalars['String']>;
+  book?: Maybe<Book>;
+};
+
 export type BookInput = {
   title: Scalars['String'];
   description: Scalars['String'];
@@ -150,6 +156,23 @@ export type LogoutMutationVariables = Exact<{ [key: string]: never; }>;
 export type LogoutMutation = (
   { __typename?: 'Mutation' }
   & Pick<Mutation, 'logout'>
+);
+
+export type PublishBookMutationVariables = Exact<{
+  input: BookInput;
+}>;
+
+
+export type PublishBookMutation = (
+  { __typename?: 'Mutation' }
+  & { publishBook: (
+    { __typename?: 'BookResponse' }
+    & Pick<BookResponse, 'errors'>
+    & { book?: Maybe<(
+      { __typename?: 'Book' }
+      & Pick<Book, 'title' | 'img' | 'inforLink' | 'available'>
+    )> }
+  ) }
 );
 
 export type RegisterMutationVariables = Exact<{
@@ -278,6 +301,45 @@ export function useLogoutMutation(baseOptions?: Apollo.MutationHookOptions<Logou
 export type LogoutMutationHookResult = ReturnType<typeof useLogoutMutation>;
 export type LogoutMutationResult = Apollo.MutationResult<LogoutMutation>;
 export type LogoutMutationOptions = Apollo.BaseMutationOptions<LogoutMutation, LogoutMutationVariables>;
+export const PublishBookDocument = gql`
+    mutation publishBook($input: BookInput!) {
+  publishBook(input: $input) {
+    book {
+      title
+      img
+      inforLink
+      available
+    }
+    errors
+  }
+}
+    `;
+export type PublishBookMutationFn = Apollo.MutationFunction<PublishBookMutation, PublishBookMutationVariables>;
+
+/**
+ * __usePublishBookMutation__
+ *
+ * To run a mutation, you first call `usePublishBookMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `usePublishBookMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [publishBookMutation, { data, loading, error }] = usePublishBookMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function usePublishBookMutation(baseOptions?: Apollo.MutationHookOptions<PublishBookMutation, PublishBookMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<PublishBookMutation, PublishBookMutationVariables>(PublishBookDocument, options);
+      }
+export type PublishBookMutationHookResult = ReturnType<typeof usePublishBookMutation>;
+export type PublishBookMutationResult = Apollo.MutationResult<PublishBookMutation>;
+export type PublishBookMutationOptions = Apollo.BaseMutationOptions<PublishBookMutation, PublishBookMutationVariables>;
 export const RegisterDocument = gql`
     mutation Register($options: RegisterInput!) {
   register(options: $options) {

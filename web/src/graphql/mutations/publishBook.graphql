@@ -1,0 +1,11 @@
+mutation publishBook($input: BookInput!) {
+  publishBook(input: $input) {
+    book {
+      title
+      img
+      inforLink
+      available
+    }
+    errors
+  }
+}
