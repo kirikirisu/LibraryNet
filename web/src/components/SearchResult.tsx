@@ -11,13 +11,13 @@ import {
   Button,
 } from '@chakra-ui/react'
 import { useRouter } from 'next/router'
+import { FALLBACK_IMG } from '../constants'
 
 interface SearchResultProps {
   keyword: string
 }
 
 const fetcher = (url: string) => axios.get(url).then(res => res.data)
-const FALLBACK_IMG = "https://via.placeholder.com/150x200"
 
 const SR: React.FC<SearchResultProps> = ({ keyword }) => {
   const url = `https://www.googleapis.com/books/v1/volumes?q=${keyword}&startIndex=0&maxResults=9`
@@ -27,7 +27,6 @@ const SR: React.FC<SearchResultProps> = ({ keyword }) => {
 
   if (error) return <div>failed to load</div>
   if (!data) return <div>loading...</div>
-  console.log("fetch data", data.items)
 
   return (
     <Flex flexWrap="wrap" flexDir={{ base: 'column', md: 'row' }} mx="auto" maxW={{ base: '100%', md: "3xl" }} mt="10">
