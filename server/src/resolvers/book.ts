@@ -13,6 +13,7 @@ import {
   Resolver,
   UseMiddleware,
 } from 'type-graphql';
+import { Library } from '../entities/Library';
 
 @InputType()
 class BookInput {
@@ -49,10 +50,18 @@ export class BookResolver {
     @Arg('input') input: BookInput,
     @Ctx() { req }: MyContext
   ): Promise<BookResponse> {
+    const { userId } = req.session;
+    const library = await Library.findOne({ where: { adminId: userId } });
+
+    // if user not have library
+    if (!library) {
+      return { errors: 'please create your library' };
+    }
+
     // insert & select
     const book = await Book.create({
       ...input,
-      ownerId: req.session.userId,
+      ownerId: userId,
     }).save();
 
     return { book };

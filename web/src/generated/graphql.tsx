@@ -66,7 +66,7 @@ export type Mutation = {
   register: UserResponse;
   login: UserResponse;
   logout: Scalars['Boolean'];
-  createLibrary: Library;
+  createLibrary: LibraryResponse;
   publishBook: BookResponse;
 };
 
@@ -109,6 +109,12 @@ export type RegisterInput = {
   password: Scalars['String'];
 };
 
+export type LibraryResponse = {
+  __typename?: 'LibraryResponse';
+  errors?: Maybe<Array<FieldError>>;
+  library?: Maybe<Library>;
+};
+
 export type LibraryInput = {
   title: Scalars['String'];
   description: Scalars['String'];
@@ -129,6 +135,25 @@ export type BookInput = {
   inforLink: Scalars['String'];
   available: Scalars['Boolean'];
 };
+
+export type CreateLibraryMutationVariables = Exact<{
+  input: LibraryInput;
+}>;
+
+
+export type CreateLibraryMutation = (
+  { __typename?: 'Mutation' }
+  & { createLibrary: (
+    { __typename?: 'LibraryResponse' }
+    & { library?: Maybe<(
+      { __typename?: 'Library' }
+      & Pick<Library, 'id' | 'title' | 'description' | 'icon' | 'organization'>
+    )>, errors?: Maybe<Array<(
+      { __typename?: 'FieldError' }
+      & Pick<FieldError, 'field' | 'message'>
+    )>> }
+  ) }
+);
 
 export type LoginMutationVariables = Exact<{
   usernameOrEmail: Scalars['String'];
@@ -230,6 +255,49 @@ export type MeQuery = (
 );
 
 
+export const CreateLibraryDocument = gql`
+    mutation createLibrary($input: LibraryInput!) {
+  createLibrary(input: $input) {
+    library {
+      id
+      title
+      description
+      icon
+      organization
+    }
+    errors {
+      field
+      message
+    }
+  }
+}
+    `;
+export type CreateLibraryMutationFn = Apollo.MutationFunction<CreateLibraryMutation, CreateLibraryMutationVariables>;
+
+/**
+ * __useCreateLibraryMutation__
+ *
+ * To run a mutation, you first call `useCreateLibraryMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateLibraryMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createLibraryMutation, { data, loading, error }] = useCreateLibraryMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useCreateLibraryMutation(baseOptions?: Apollo.MutationHookOptions<CreateLibraryMutation, CreateLibraryMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateLibraryMutation, CreateLibraryMutationVariables>(CreateLibraryDocument, options);
+      }
+export type CreateLibraryMutationHookResult = ReturnType<typeof useCreateLibraryMutation>;
+export type CreateLibraryMutationResult = Apollo.MutationResult<CreateLibraryMutation>;
+export type CreateLibraryMutationOptions = Apollo.BaseMutationOptions<CreateLibraryMutation, CreateLibraryMutationVariables>;
 export const LoginDocument = gql`
     mutation Login($usernameOrEmail: String!, $password: String!) {
   login(usernameOrEmail: $usernameOrEmail, password: $password) {

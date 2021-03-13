@@ -1,4 +1,4 @@
-import { User } from "../entities/User";
+import { User } from '../entities/User';
 import {
   Arg,
   Ctx,
@@ -7,21 +7,13 @@ import {
   ObjectType,
   Query,
   Resolver,
-} from "type-graphql";
-import argon2 from "argon2";
-import { getConnection } from "typeorm";
-import { MyContext } from "../types";
-import { validateRejister } from "../utils/validateRegister";
-import { RegisterInput } from "./RegisterInput";
-import { COOKIE_NAME } from "../constants";
-
-@ObjectType()
-class FieldError {
-  @Field()
-  field: string;
-  @Field()
-  message: string;
-}
+} from 'type-graphql';
+import argon2 from 'argon2';
+import { getConnection } from 'typeorm';
+import { FieldError, MyContext } from '../types';
+import { validateRejister } from '../utils/validateRegister';
+import { RegisterInput } from './RegisterInput';
+import { COOKIE_NAME } from '../constants';
 
 @ObjectType()
 class UserResponse {
@@ -45,7 +37,7 @@ export class UserResolver {
 
   @Mutation(() => UserResponse)
   async register(
-    @Arg("options") options: RegisterInput,
+    @Arg('options') options: RegisterInput,
     @Ctx() { req }: MyContext
   ): Promise<UserResponse> {
     const errors = validateRejister(options);
@@ -65,17 +57,16 @@ export class UserResolver {
           email: options.email,
           password: hashedPassword,
         })
-        .returning("*")
+        .returning('*')
         .execute();
       user = result.raw[0];
     } catch (err) {
-      console.log("---------------ERROR---------------", err);
-      if (err.code === "23505") {
+      if (err.code === '23505') {
         return {
           errors: [
             {
-              field: "username",
-              message: "username alredy taken",
+              field: 'username',
+              message: 'username alredy taken',
             },
           ],
         };
@@ -91,12 +82,12 @@ export class UserResolver {
 
   @Mutation(() => UserResponse)
   async login(
-    @Arg("usernameOrEmail") usernameOrEmail: string,
-    @Arg("password") password: string,
+    @Arg('usernameOrEmail') usernameOrEmail: string,
+    @Arg('password') password: string,
     @Ctx() { req }: MyContext
   ): Promise<UserResponse> {
     const user = await User.findOne(
-      usernameOrEmail.includes("@")
+      usernameOrEmail.includes('@')
         ? { where: { email: usernameOrEmail } }
         : { where: { username: usernameOrEmail } }
     );
@@ -105,7 +96,7 @@ export class UserResolver {
       return {
         errors: [
           {
-            field: "usernameOrEmail",
+            field: 'usernameOrEmail',
             message: "this user doesn't exist",
           },
         ],
@@ -117,8 +108,8 @@ export class UserResolver {
       return {
         errors: [
           {
-            field: "password",
-            message: "incorrect password",
+            field: 'password',
+            message: 'incorrect password',
           },
         ],
       };

@@ -1,0 +1,15 @@
+mutation createLibrary($input: LibraryInput!) {
+  createLibrary(input: $input) {
+    library {
+      id
+      title
+      description
+      icon
+      organization
+    }
+    errors {
+      field
+      message
+    }
+  }
+}

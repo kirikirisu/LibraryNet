@@ -11,7 +11,6 @@ const MainContainerWidth: React.FC<ResponsiveWrapperProps> = ({ children }) => {
       mx="auto"
       py="4"
       px="2"
-      backgroundColor={{ base: 'aqua', md: 'bisque' }}
     >
       {children}
     </Box>

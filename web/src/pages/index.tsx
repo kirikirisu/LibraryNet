@@ -19,7 +19,14 @@ const Index: any = ({ }) => {
       <MainContainerWidth>
         {
           data.librarys?.map((lib) => (
-            <Box key={lib.id} bg="teal.50" p={2} mb={4} display={{ md: "flex" }} borderRadius="sm">
+            <Box
+              key={lib.id}
+              p={2} mb={4}
+              display={{ md: "flex" }}
+              borderRadius="sm"
+              borderWidth="thin"
+              borderColor="gray.200"
+            >
               <Box flexShrink={0}>
                 <Img
                   width={{ md: 48 }}

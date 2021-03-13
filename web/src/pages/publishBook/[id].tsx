@@ -1,4 +1,4 @@
-// google books apiをサーバー側でフェッチして、apolloのフェッチをクライアント側で行いうこともできそう
+// google books apiをサーバー側でフェッチして、apolloのフェッチをクライアント側で行うこともできそう
 // 簡単にするためにどちらもクライアント側でフェッチする
 // import { GetServerSideProps } from 'next'
 import useSWR from 'swr'
@@ -60,7 +60,7 @@ const PublishBook = () => {
       inforLink: infoLink,
       available: true,
     }
-    console.log("sendObj", sendObj)
+
     try {
       const res = await publishBook({ variables: { input: { ...sendObj } } })
       if (res.data?.publishBook.errors) {
@@ -69,6 +69,7 @@ const PublishBook = () => {
         router.push("/")
       }
     } catch (err) {
+      // userがログインしていない場合、ここでエラーを拾う
       alert(err)
     }
 

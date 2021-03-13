@@ -29,7 +29,13 @@ const SR: React.FC<SearchResultProps> = ({ keyword }) => {
   if (!data) return <div>loading...</div>
 
   return (
-    <Flex flexWrap="wrap" flexDir={{ base: 'column', md: 'row' }} mx="auto" maxW={{ base: '100%', md: "3xl" }} mt="10">
+    <Flex
+      flexWrap="wrap"
+      flexDir={{ base: 'column', md: 'row' }}
+      mx="auto"
+      maxW={{ base: '100%', md: "3xl" }}
+      mt="10"
+    >
       {data.items.map(({ id, volumeInfo }) => {
         const { imageLinks } = volumeInfo;
         return (
