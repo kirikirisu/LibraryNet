@@ -63,6 +63,22 @@ export class LibraryResolver {
   // @Mutation(() => Library)
   // updateLibrary(){}
 
+  @Query(() => Boolean, { nullable: true })
+  async hasLibrary(@Ctx() { req }: MyContext) {
+    const { userId } = req.session;
+    if (!userId) {
+      return null;
+    }
+    const library = await Library.findOne({ where: { adminId: userId } });
+
+    // libraryを作っていない
+    if (!library) {
+      return false;
+    }
+
+    return true;
+  }
+
   @Query(() => [Library], { nullable: true })
   async librarys() {
     const librarys = await Library.find({});

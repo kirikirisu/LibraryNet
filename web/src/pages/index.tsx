@@ -1,10 +1,11 @@
 import { Image, Box, Img, Text, Link } from "@chakra-ui/react"
-import { useLibrarysQuery } from '../generated/graphql';
+import { useHasLibraryQuery, useLibrarysQuery } from '../generated/graphql';
 import withApollo from '../utils/withApollo'
 import NextLink from 'next/link'
 
 import { Header } from '../components/Header'
 import MainContainerWidth from "../components/MainContainerWidth";
+import { CreateLibraryButton } from "../components/CreateLibraryButton";
 
 const Index: any = ({ }) => {
   const { data, loading, error } = useLibrarysQuery()
@@ -17,6 +18,7 @@ const Index: any = ({ }) => {
     <Box>
       <Header />
       <MainContainerWidth>
+        <CreateLibraryButton />
         {
           data.librarys?.map((lib) => (
             <Box

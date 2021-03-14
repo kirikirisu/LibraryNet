@@ -17,6 +17,7 @@ export type Scalars = {
 export type Query = {
   __typename?: 'Query';
   me?: Maybe<User>;
+  hasLibrary?: Maybe<Scalars['Boolean']>;
   librarys?: Maybe<Array<Library>>;
   books: Array<Book>;
 };
@@ -230,6 +231,14 @@ export type BooksQuery = (
     { __typename?: 'Book' }
     & Pick<Book, 'id' | 'description' | 'title' | 'img' | 'inforLink' | 'available' | 'ownerId'>
   )> }
+);
+
+export type HasLibraryQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type HasLibraryQuery = (
+  { __typename?: 'Query' }
+  & Pick<Query, 'hasLibrary'>
 );
 
 export type LibrarysQueryVariables = Exact<{ [key: string]: never; }>;
@@ -489,6 +498,38 @@ export function useBooksLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<Book
 export type BooksQueryHookResult = ReturnType<typeof useBooksQuery>;
 export type BooksLazyQueryHookResult = ReturnType<typeof useBooksLazyQuery>;
 export type BooksQueryResult = Apollo.QueryResult<BooksQuery, BooksQueryVariables>;
+export const HasLibraryDocument = gql`
+    query hasLibrary {
+  hasLibrary
+}
+    `;
+
+/**
+ * __useHasLibraryQuery__
+ *
+ * To run a query within a React component, call `useHasLibraryQuery` and pass it any options that fit your needs.
+ * When your component renders, `useHasLibraryQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useHasLibraryQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useHasLibraryQuery(baseOptions?: Apollo.QueryHookOptions<HasLibraryQuery, HasLibraryQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<HasLibraryQuery, HasLibraryQueryVariables>(HasLibraryDocument, options);
+      }
+export function useHasLibraryLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<HasLibraryQuery, HasLibraryQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<HasLibraryQuery, HasLibraryQueryVariables>(HasLibraryDocument, options);
+        }
+export type HasLibraryQueryHookResult = ReturnType<typeof useHasLibraryQuery>;
+export type HasLibraryLazyQueryHookResult = ReturnType<typeof useHasLibraryLazyQuery>;
+export type HasLibraryQueryResult = Apollo.QueryResult<HasLibraryQuery, HasLibraryQueryVariables>;
 export const LibrarysDocument = gql`
     query Librarys {
   librarys {

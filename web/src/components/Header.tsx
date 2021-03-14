@@ -19,6 +19,8 @@ interface HeaderProps {
 
 }
 
+const isServer = () => typeof window === "undefined";
+
 export const Header: React.FC<HeaderProps> = ({ }) => {
   const { data, loading } = useMeQuery({ skip: typeof window === "undefined" })
   const [logout, { loading: logoutLoading }] = useLogoutMutation()
