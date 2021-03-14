@@ -1,20 +1,20 @@
-import { extendTheme } from '@chakra-ui/react'
-import { createBreakpoints } from '@chakra-ui/theme-tools'
+import { extendTheme } from '@chakra-ui/react';
+import { createBreakpoints } from '@chakra-ui/theme-tools';
 
 const config = {
-  initialColorMode: "light",
+  initialColorMode: 'light',
   useSystemColorMode: false,
-}
+};
 
-const fonts = { mono: `'Menlo', monospace` }
+const fonts = { mono: `'Menlo', monospace` };
 
 // fix to align tailwindow default break points
 const breakpoints = createBreakpoints({
-  sm: "640px",
-  md: "768px",
-  lg: "1024px",
-  xl: "1280px",
-})
+  sm: '640px',
+  md: '768px',
+  lg: '1024px',
+  xl: '1280px',
+});
 
 const theme = extendTheme({
   config,
@@ -43,6 +43,6 @@ const theme = extendTheme({
       viewBox: '0 0 3000 3163',
     },
   },
-})
+});
 
-export default theme
+export default theme;

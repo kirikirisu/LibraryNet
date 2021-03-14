@@ -9,52 +9,49 @@ import {
   Menu,
   MenuButton,
   MenuList,
-  MenuItem
-} from '@chakra-ui/react'
-import { HamburgerIcon, AddIcon, ArrowForwardIcon, ExternalLinkIcon } from '@chakra-ui/icons'
-import { useMeQuery, useLogoutMutation, MeQuery, MeDocument } from '../generated/graphql'
-import NextLink from 'next/link'
+  MenuItem,
+} from '@chakra-ui/react';
+import {
+  HamburgerIcon,
+  AddIcon,
+  ArrowForwardIcon,
+  ExternalLinkIcon,
+} from '@chakra-ui/icons';
+import {
+  useMeQuery,
+  useLogoutMutation,
+  MeQuery,
+  MeDocument,
+} from '../generated/graphql';
+import NextLink from 'next/link';
 
-interface HeaderProps {
+// const isServer = () => typeof window === 'undefined';
 
-}
-
-const isServer = () => typeof window === "undefined";
-
-export const Header: React.FC<HeaderProps> = ({ }) => {
-  const { data, loading } = useMeQuery({ skip: typeof window === "undefined" })
-  const [logout, { loading: logoutLoading }] = useLogoutMutation()
+export const Header: React.FC = () => {
+  const { data, loading } = useMeQuery({ skip: typeof window === 'undefined' });
+  const [logout, { loading: logoutLoading }] = useLogoutMutation();
 
   let body = null;
   if (loading) {
-    body = <Text>Loading...</Text>
+    body = <Text>Loading...</Text>;
   } else if (!data?.me) {
     body = (
       <>
-        <Box display={{ base: "none", lg: "block" }}>
+        <Box display={{ base: 'none', lg: 'block' }}>
           <Flex justify="center" align="center">
             <NextLink href="/login">
-              <Button
-                variant="outline"
-                colorScheme="teal"
-                mr="2"
-                as={Link}
-              >
+              <Button variant="outline" colorScheme="teal" mr="2" as={Link}>
                 login
               </Button>
             </NextLink>
             <NextLink href="/register">
-              <Button
-                variant="solid"
-                colorScheme="teal"
-                as={Link}
-              >
+              <Button variant="solid" colorScheme="teal" as={Link}>
                 register
               </Button>
             </NextLink>
           </Flex>
         </Box>
-        <Box display={{ base: "block", lg: "none" }}>
+        <Box display={{ base: 'block', lg: 'none' }}>
           <Menu>
             <MenuButton
               as={IconButton}
@@ -65,51 +62,51 @@ export const Header: React.FC<HeaderProps> = ({ }) => {
             />
             <MenuList>
               <NextLink href="/login">
-                <MenuItem icon={<ArrowForwardIcon />}>
-                  Login
-                </MenuItem>
+                <MenuItem icon={<ArrowForwardIcon />}>Login</MenuItem>
               </NextLink>
               <NextLink href="/register">
-                <MenuItem icon={<AddIcon />}>
-                  Register
-                </MenuItem>
+                <MenuItem icon={<AddIcon />}>Register</MenuItem>
               </NextLink>
             </MenuList>
           </Menu>
         </Box>
       </>
-    )
+    );
   } else {
     body = (
       <>
-        <Box display={{ base: "none", lg: "block" }}>
+        <Box display={{ base: 'none', lg: 'block' }}>
           <Flex justify="center" align="center">
-            <Text fontSize="xl" mr="4">{data.me.username}</Text>
+            <Text fontSize="xl" mr="4">
+              {data.me.username}
+            </Text>
             <Button
               variant="outline"
               colorScheme="teal"
               isLoading={logoutLoading}
               onClick={async () => {
                 await logout({
-                  update: (cache, { data }) => {
+                  update: (cache) => {
                     cache.writeQuery<MeQuery>({
                       query: MeDocument,
                       data: {
-                        __typename: "Query",
+                        __typename: 'Query',
                         me: null,
-                      }
-                    })
-                  }
+                      },
+                    });
+                  },
                 });
               }}
             >
               logout
-        </Button>
+            </Button>
           </Flex>
         </Box>
-        <Box display={{ base: "block", lg: "none" }}>
+        <Box display={{ base: 'block', lg: 'none' }}>
           <Flex justify="center" align="center">
-            <Text fontSize="xl" mr="4">{data.me.username}</Text>
+            <Text fontSize="xl" mr="4">
+              {data.me.username}
+            </Text>
             <IconButton
               aria-label="logout button"
               size="sm"
@@ -122,7 +119,7 @@ export const Header: React.FC<HeaderProps> = ({ }) => {
           </Flex>
         </Box>
       </>
-    )
+    );
   }
 
   return (
@@ -150,4 +147,4 @@ export const Header: React.FC<HeaderProps> = ({ }) => {
       </Flex>
     </Box>
   );
-}
+};

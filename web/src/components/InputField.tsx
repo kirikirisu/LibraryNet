@@ -1,4 +1,10 @@
-import { FormControl, FormLabel, Input, FormErrorMessage, Textarea } from '@chakra-ui/react';
+import {
+  FormControl,
+  FormLabel,
+  Input,
+  FormErrorMessage,
+  Textarea,
+} from '@chakra-ui/react';
 import { useField } from 'formik';
 
 type InputFieldProps = React.InputHTMLAttributes<HTMLInputElement> & {
@@ -7,12 +13,16 @@ type InputFieldProps = React.InputHTMLAttributes<HTMLInputElement> & {
   textarea?: boolean;
 };
 
-export const InputField: React.FC<InputFieldProps> = ({ label, textarea, ...props }) => {
-  const [field, { error }] = useField(props)
+export const InputField: React.FC<InputFieldProps> = ({
+  label,
+  textarea,
+  ...props
+}) => {
+  const [field, { error }] = useField(props);
 
   let InputOrTextarea: any = Input;
   if (textarea) {
-    InputOrTextarea = Textarea
+    InputOrTextarea = Textarea;
   }
 
   return (
@@ -22,4 +32,4 @@ export const InputField: React.FC<InputFieldProps> = ({ label, textarea, ...prop
       {error ? <FormErrorMessage>{error}</FormErrorMessage> : null}
     </FormControl>
   );
-}
+};

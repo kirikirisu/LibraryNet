@@ -1,19 +1,14 @@
-import { Box, Flex, Center } from '@chakra-ui/react'
+import { Box, Flex } from '@chakra-ui/react';
 
 interface FormContainerProps {
-  children: React.ReactNode
+  children: React.ReactNode;
 }
 
 export const FormContainer: React.FC<FormContainerProps> = ({ children }) => {
   return (
-    <Flex
-      height="100vh"
-      widht="100vw"
-      justify="center"
-      align="center"
-    >
+    <Flex height="100vh" widht="100vw" justify="center" align="center">
       <Box
-        width={{ base: "full", md: "container.sm" }}
+        width={{ base: 'full', md: 'container.sm' }}
         boxShadow="sm"
         mx={{ base: 4, md: 2 }}
         px={{ base: 4, md: 6 }}
@@ -27,4 +22,4 @@ export const FormContainer: React.FC<FormContainerProps> = ({ children }) => {
       </Box>
     </Flex>
   );
-}
+};

@@ -1,22 +1,22 @@
 import { Box, Text, Img, Link } from '@chakra-ui/react';
-import { useBooksQuery } from '../../generated/graphql'
+import { useBooksQuery } from '../../generated/graphql';
 import { useGetId } from '../../utils/useGetId';
-import withApollo from '../../utils/withApollo'
-import MainContainerWidth from '../../components/MainContainerWidth'
-import NextLink from 'next/link'
-import { omitString } from '../../utils/omitString'
+import withApollo from '../../utils/withApollo';
+import MainContainerWidth from '../../components/MainContainerWidth';
+import NextLink from 'next/link';
+import { omitString } from '../../utils/omitString';
 
-const Shelf: React.FC<{}> = ({ }) => {
-  const intId = useGetId()
+const Shelf: React.FC = () => {
+  const intId = useGetId();
 
   const { data, loading, error } = useBooksQuery({
     skip: intId === -1,
-    variables: { id: intId }
-  })
+    variables: { id: intId },
+  });
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error :(</p>;
-  if (!data) return <p>couldn't get data</p>
+  if (!data) return <p>can not get data</p>;
 
   return (
     <Box>
@@ -24,8 +24,9 @@ const Shelf: React.FC<{}> = ({ }) => {
         {data.books?.map((book) => (
           <Box
             key={book.id}
-            p={2} mb={4}
-            display={{ md: "flex" }}
+            p={2}
+            mb={4}
+            display={{ md: 'flex' }}
             borderRadius="sm"
             borderWidth="thin"
             borderColor="gray.200"
@@ -48,7 +49,7 @@ const Shelf: React.FC<{}> = ({ }) => {
                 letterSpacing="wide"
                 color="teal.600"
               >
-                {book.available ? "available" : "invalid"}
+                {book.available ? 'available' : 'invalid'}
               </Text>
               <NextLink href={`/subscribeBook/${book.id}`}>
                 <Link
@@ -70,6 +71,6 @@ const Shelf: React.FC<{}> = ({ }) => {
       </MainContainerWidth>
     </Box>
   );
-}
+};
 
 export default withApollo({ ssr: true })(Shelf);

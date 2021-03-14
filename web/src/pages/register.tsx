@@ -1,5 +1,5 @@
 import { useRegisterMutation } from '../generated/graphql';
-import { Field, Form, Formik } from 'formik';
+import { Form, Formik } from 'formik';
 import { Button } from '@chakra-ui/button';
 import { InputField } from '../components/InputField';
 import { FormContainer } from '../components/FormContainer';
@@ -8,9 +8,7 @@ import { toErrorMap } from '../utils/toErrorMap';
 import withApollo from '../utils/withApollo';
 import { useRouter } from 'next/router';
 
-interface registerProps {}
-
-const Register: React.FC<registerProps> = ({}) => {
+const Register: React.FC = () => {
   const router = useRouter();
   const [register] = useRegisterMutation();
 

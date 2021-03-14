@@ -1,14 +1,14 @@
-import React, { useEffect } from 'react'
-import { Flex, Box, Button, Input } from '@chakra-ui/react'
-import router from 'next/router'
-import { SearchResult } from '../components/SearchResult'
+import React from 'react';
+import { Flex, Box, Button, Input } from '@chakra-ui/react';
+// import router from 'next/router';
+import { SearchResult } from '../components/SearchResult';
 
-const SearchBook: React.FC<{}> = ({}) => {
-  const [searchValue, setSearchValue] = React.useState('')
-  const handleChange = (event: any) => setSearchValue(event.target.value)
+const SearchBook: React.FC = () => {
+  const [searchValue, setSearchValue] = React.useState('');
+  const handleChange = (event: any) => setSearchValue(event.target.value);
 
-  const [keyword, setKeyword] = React.useState('技術書')
-  const handlePush = () => setKeyword(searchValue)
+  const [keyword, setKeyword] = React.useState('技術書');
+  const handlePush = () => setKeyword(searchValue);
 
   return (
     <>
@@ -32,7 +32,7 @@ const SearchBook: React.FC<{}> = ({}) => {
       </Box>
       <SearchResult keyword={keyword} />
     </>
-  )
-}
+  );
+};
 
-export default SearchBook
+export default SearchBook;
