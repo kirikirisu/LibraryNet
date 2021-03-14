@@ -1,31 +1,29 @@
 import { useRegisterMutation } from '../generated/graphql';
-import { Field, Form, Formik } from 'formik'
+import { Field, Form, Formik } from 'formik';
 import { Button } from '@chakra-ui/button';
 import { InputField } from '../components/InputField';
 import { FormContainer } from '../components/FormContainer';
 import { Box } from '@chakra-ui/layout';
 import { toErrorMap } from '../utils/toErrorMap';
-import withApollo from '../utils/withApollo'
-import { useRouter } from 'next/router'
+import withApollo from '../utils/withApollo';
+import { useRouter } from 'next/router';
 
-interface registerProps {
+interface registerProps {}
 
-}
-
-const Register: React.FC<registerProps> = ({ }) => {
-  const router = useRouter()
-  const [register] = useRegisterMutation()
+const Register: React.FC<registerProps> = ({}) => {
+  const router = useRouter();
+  const [register] = useRegisterMutation();
 
   return (
     <FormContainer>
       <Formik
-        initialValues={{ username: "", email: "", password: "" }}
+        initialValues={{ username: '', email: '', password: '' }}
         onSubmit={async (values, { setErrors }) => {
-          const response = await register({ variables: { options: values } })
+          const response = await register({ variables: { options: values } });
           if (response.data?.register.errors) {
-            setErrors(toErrorMap(response.data.register.errors))
+            setErrors(toErrorMap(response.data.register.errors));
           } else if (response.data?.register.user) {
-            router.push("/")
+            router.push('/');
           }
         }}
       >
@@ -37,11 +35,7 @@ const Register: React.FC<registerProps> = ({ }) => {
               label="Username"
             />
             <Box my="5">
-              <InputField
-                name="email"
-                placeholder="email"
-                label="Email"
-              />
+              <InputField name="email" placeholder="email" label="Email" />
             </Box>
             <InputField
               name="password"
@@ -55,12 +49,12 @@ const Register: React.FC<registerProps> = ({ }) => {
               type="submit"
             >
               Submit
-          </Button>
+            </Button>
           </Form>
         )}
       </Formik>
     </FormContainer>
-  )
-}
+  );
+};
 
 export default withApollo({ ssr: false })(Register);

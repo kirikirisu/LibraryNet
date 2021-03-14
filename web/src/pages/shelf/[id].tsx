@@ -17,7 +17,6 @@ const Shelf: React.FC<{}> = ({ }) => {
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error :(</p>;
   if (!data) return <p>couldn't get data</p>
-  console.log("data", data)
 
   return (
     <Box>
