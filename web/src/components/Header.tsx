@@ -12,7 +12,7 @@ import {
   MenuItem
 } from '@chakra-ui/react'
 import { HamburgerIcon, AddIcon, ArrowForwardIcon, ExternalLinkIcon } from '@chakra-ui/icons'
-import { useMeQuery, useLogoutMutation } from '../generated/graphql'
+import { useMeQuery, useLogoutMutation, MeQuery, MeDocument } from '../generated/graphql'
 import NextLink from 'next/link'
 
 interface HeaderProps {
@@ -90,7 +90,17 @@ export const Header: React.FC<HeaderProps> = ({ }) => {
               colorScheme="teal"
               isLoading={logoutLoading}
               onClick={async () => {
-                await logout();
+                await logout({
+                  update: (cache, { data }) => {
+                    cache.writeQuery<MeQuery>({
+                      query: MeDocument,
+                      data: {
+                        __typename: "Query",
+                        me: null,
+                      }
+                    })
+                  }
+                });
               }}
             >
               logout

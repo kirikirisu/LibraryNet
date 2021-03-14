@@ -8,6 +8,7 @@ import { useRouter } from 'next/router'
 import { FALLBACK_IMG, FALLBACK_TXT } from '../../constants';
 import { BookInput, usePublishBookMutation } from '../../generated/graphql';
 import withApollo from '../../utils/withApollo'
+import { omitString } from '../../utils/omitString'
 
 const BOOKS_API_BASE_URL = "https://www.googleapis.com/books/v1/volumes/";
 
@@ -16,15 +17,6 @@ const deleteTags = (t: string) => {
   return replaced
 }
 
-const omitString = (t: string) => {
-  const max = 300;
-
-  if (t.length > max) {
-    return t.substr(0, max) + '...'
-  }
-
-  return t
-}
 
 const spaceTol = (t: string) => {
   // 半角か全角のスペース

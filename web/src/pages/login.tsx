@@ -6,7 +6,7 @@ import { FormContainer } from '../components/FormContainer'
 import { toErrorMap } from '../utils/toErrorMap'
 import withApollo from '../utils/withApollo';
 import { useRouter } from 'next/router'
-import { useLoginMutation } from '../generated/graphql';
+import { HasLibraryDocument, HasLibraryQuery, MeDocument, MeQuery, useLoginMutation } from '../generated/graphql';
 
 
 interface loginProps {
@@ -24,9 +24,18 @@ const Login: React.FC<loginProps> = ({ }) => {
         onSubmit={async (values, { setErrors }) => {
           const response = await login({
             variables: { ...values },
-            update: (caches, { data }) => {
-              console.log("caches", caches)
-              console.log("data", data)
+            // キャッシュを書き換える
+            // loginで返ってきたdataをmeクエリのキャッシュに書き込む
+            update: (cache, { data }) => {
+              cache.writeQuery<MeQuery>({
+                query: MeDocument,
+                data: {
+                  __typename: "Query",
+                  me: data?.login.user
+                }
+              })
+
+              // const hasLib = cache.readQuery()
             },
           })
           if (response.data?.login.errors) {
