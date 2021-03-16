@@ -5,10 +5,12 @@ import {
   CreateDateColumn,
   Entity,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
 import { User } from "../entities/User";
+import { SharedBook } from "./SharedBook";
 
 @ObjectType()
 @Entity()
@@ -43,6 +45,9 @@ export class Book extends BaseEntity {
 
   @ManyToOne(() => User, (user) => user.books)
   owner: User;
+
+  @OneToMany(() => SharedBook, sharedBook => sharedBook.book)
+  shares: SharedBook[]
 
   @Field(() => String)
   @CreateDateColumn()

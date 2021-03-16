@@ -15,6 +15,7 @@ import { Library } from './entities/Library';
 import { LibraryResolver } from './resolvers/library';
 import { BookResolver } from './resolvers/book';
 import { Book } from './entities/Book';
+import {SharedBook} from './entities/SharedBook'
 
 const main = async () => {
   const conn = await createConnection({
@@ -24,7 +25,7 @@ const main = async () => {
     password: 'postgres',
     logging: true,
     synchronize: true,
-    entities: [User, Library, Book],
+    entities: [User, Library, Book, SharedBook],
   });
 
   const app = express();
