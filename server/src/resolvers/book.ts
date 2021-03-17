@@ -16,8 +16,8 @@ import {
 import { Library } from '../entities/Library';
 import { SharedBook } from '../entities/SharedBook';
 import {getConnection} from "typeorm";
-// import dotenv from 'dotenv'
-import axios from 'axios'
+import { User } from '../entities/User';
+import { sendMessageToChannel } from '../utils/sendMessageToChannel';
 
 
 @InputType()
@@ -88,61 +88,62 @@ export class BookResolver {
     @Ctx() { req }: MyContext
   ): Promise<SubscribeResponse> {
     const {userId} = req.session
+    const user = await User.findOne({ where: {id: userId}})
     const book = await Book.findOne({ where: { id }})
-    const library = await Library.findOne({ where: { adminId: userId }})
+    // const library = await Library.findOne({ where: { adminId: userId }})
 
     if (userId === book?.ownerId) {
       return { errors: "can not subscribe own book" }
     }
 
+    if (!book) {}
+    if (!user) {
+      return { errors: "can not find user"}
+    }
+
     if (!book?.available) {
-      return { errors: "already subscribed"}
+      return { errors: "already subscribed" }
     }
 
-    let shared;
-    if (library?.organization){
-      await getConnection()
-          .createQueryBuilder()
-          .update(Book)
-          .set({
-            available: false
-          })
-          .where("id = :id", {id: id})
+    console.log("-------------------------done sub---------------------------")
+    await getConnection()
+        .createQueryBuilder()
+        .update(Book)
+        .set({
+          available: false
+        })
+        .where("id = :id", {id: id})
+        .execute()
 
-      shared = await SharedBook.create({
-        publisherId: book?.ownerId,
-        subscriberId: userId,
-        bookId: id,
-      }).save()
-    }
+    let shared = await SharedBook.create({
+      publisherId: book?.ownerId,
+      subscriberId: userId,
+      bookId: id,
+    }).save()
 
-    console.log(shared)
+    const status = await sendMessageToChannel({ user, book})
+
+    console.log("status", status)
 
     return {shared: true}
   }
 
-  @Mutation(() => Number, {nullable: true})
-  async testPostMessageToSlack(): Promise<number> {
-    const headers = {
-      'Content-Type': 'application/json',
-    }
+  // @Mutation(() => Number, {nullable: true})
+  // async testPostMessageToSlack(): Promise<number> {
 
-    const data = {"text":"Hello, World!", "attachments": [{"pretext": "pre-hello from graphpq server", "text": "text-world"}]}
-
-    const { status } = await axios({
-      method: 'post',
-      url: process.env.SLACK_URL,
-      data,
-      headers
-   })
-
-   console.log("status",status)
-   return status
-  }
+  //  console.log("status",status)
+  //  return status
+  // }
 
   @Query(() => [Book])
   async books(@Arg('id', () => Int) id: number) {
     const books = await Book.find({ where: { ownerId: id } });
     return books;
+  }
+
+  @Query(() => Book, {nullable: true})
+  async book(@Arg('id', () => Int) id: number) {
+    const book = await Book.findOne({ where: { id: id } });
+    return book;
   }
 }

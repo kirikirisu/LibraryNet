@@ -25,11 +25,14 @@ import {
 } from '../generated/graphql';
 import NextLink from 'next/link';
 
-// const isServer = () => typeof window === 'undefined';
-
 export const Header: React.FC = () => {
   const { data, loading } = useMeQuery({ skip: typeof window === 'undefined' });
   const [logout, { loading: logoutLoading }] = useLogoutMutation();
+
+  // const apolloClient = useApolloClient();
+  // const { me } = apolloClient.readQuery({
+  //   query: MeDocument,
+  // });
 
   let body = null;
   if (loading) {

@@ -1,5 +1,5 @@
 import { Box, Img, Text, Link } from '@chakra-ui/react';
-import { useLibrarysQuery } from '../generated/graphql';
+import { useLibrarysQuery, useMeQuery } from '../generated/graphql';
 import withApollo from '../utils/withApollo';
 import NextLink from 'next/link';
 
@@ -7,8 +7,15 @@ import { Header } from '../components/Header';
 import MainContainerWidth from '../components/MainContainerWidth';
 import { CreateLibraryButton } from '../components/CreateLibraryButton';
 
+const isServer = (): boolean => typeof window === 'undefined';
+
 const Index: any = () => {
   const { data, loading, error } = useLibrarysQuery();
+
+  // Headerコンポーネントでも同じクエリを叩いているが
+  // どちらかのクエリがキャッシュされるため
+  // ネットワークコールは一回になる
+  // const { data: meData, loading: meLoading } = useMeQuery({ skip: isServer() });
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error :(</p>;

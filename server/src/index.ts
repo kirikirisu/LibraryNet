@@ -31,6 +31,13 @@ const main = async () => {
   });
   // console.log(process.env.DB_NAME)
 
+  // conn.createQueryBuilder()
+  //     .createQueryBuilder()
+  //     .delete()
+  //     .from(SharedBook)
+  //     .where("bookId = :id", {id: 15})
+  //     .execute()
+
   const app = express();
   const RedisStore = connectRedis(session);
   const redis = new Redis();
