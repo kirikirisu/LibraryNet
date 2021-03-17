@@ -1,4 +1,5 @@
 import 'reflect-metadata';
+import dotenv from 'dotenv'
 import { createConnection } from 'typeorm';
 import express from 'express';
 import { buildSchema } from 'type-graphql';
@@ -18,6 +19,7 @@ import { Book } from './entities/Book';
 import {SharedBook} from './entities/SharedBook'
 
 const main = async () => {
+  dotenv.config()
   const conn = await createConnection({
     type: 'postgres',
     database: 'librarynet',
@@ -27,6 +29,7 @@ const main = async () => {
     synchronize: true,
     entities: [User, Library, Book, SharedBook],
   });
+  // console.log(process.env.DB_NAME)
 
   const app = express();
   const RedisStore = connectRedis(session);

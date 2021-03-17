@@ -43,7 +43,7 @@ export class Book extends BaseEntity {
   @Column()
   ownerId!: number;
 
-  @ManyToOne(() => User, (user) => user.books)
+  @ManyToOne(() => User, (user) => user.books, { onDelete: 'CASCADE'})
   owner: User;
 
   @OneToMany(() => SharedBook, sharedBook => sharedBook.book)

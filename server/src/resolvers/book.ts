@@ -16,6 +16,9 @@ import {
 import { Library } from '../entities/Library';
 import { SharedBook } from '../entities/SharedBook';
 import {getConnection} from "typeorm";
+// import dotenv from 'dotenv'
+import axios from 'axios'
+
 
 @InputType()
 class BookInput {
@@ -111,12 +114,30 @@ export class BookResolver {
         subscriberId: userId,
         bookId: id,
       }).save()
-
     }
 
     console.log(shared)
 
     return {shared: true}
+  }
+
+  @Mutation(() => Number, {nullable: true})
+  async testPostMessageToSlack(): Promise<number> {
+    const headers = {
+      'Content-Type': 'application/json',
+    }
+
+    const data = {"text":"Hello, World!", "attachments": [{"pretext": "pre-hello from graphpq server", "text": "text-world"}]}
+
+    const { status } = await axios({
+      method: 'post',
+      url: process.env.SLACK_URL,
+      data,
+      headers
+   })
+
+   console.log("status",status)
+   return status
   }
 
   @Query(() => [Book])
