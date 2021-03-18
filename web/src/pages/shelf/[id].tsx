@@ -1,10 +1,14 @@
-import { Box, Text, Img, Link } from '@chakra-ui/react';
+import { Flex, Box, Text, Img, Link, Button } from '@chakra-ui/react';
 import { useBooksQuery } from '../../generated/graphql';
 import { useGetId } from '../../utils/useGetId';
 import withApollo from '../../utils/withApollo';
 import MainContainerWidth from '../../components/MainContainerWidth';
 import NextLink from 'next/link';
 import { omitString } from '../../utils/omitString';
+
+const h = (n: number): void => {
+  console.log(n);
+};
 
 const Shelf: React.FC = () => {
   const intId = useGetId();
@@ -41,7 +45,7 @@ const Shelf: React.FC = () => {
                 alt="Library image"
               />
             </Box>
-            <Box mt={{ base: 4, md: 0 }} ml={{ md: 6 }}>
+            <Flex direction="column" mt={{ base: 4, md: 0 }} ml={{ md: 6 }}>
               <Text
                 fontWeight="bold"
                 textTransform="uppercase"
@@ -51,21 +55,29 @@ const Shelf: React.FC = () => {
               >
                 {book.available ? 'available' : 'invalid'}
               </Text>
-              <NextLink href={`/subscribeBook/${book.id}`}>
-                <Link
-                  mt={1}
-                  display="block"
-                  fontSize="xl"
-                  lineHeight="normal"
-                  fontWeight="semibold"
-                >
-                  {book.title}
-                </Link>
-              </NextLink>
+              <Link
+                mt={1}
+                display="block"
+                fontSize="xl"
+                lineHeight="normal"
+                fontWeight="semibold"
+              >
+                {book.title}
+              </Link>
               <Text mt={2} color="gray.500" fontSize="md">
                 {omitString(book.description)}
               </Text>
-            </Box>
+              <Button
+                alignSelf="flex-end"
+                mt="6"
+                mr="4"
+                colorScheme="teal"
+                variant="outline"
+                onClick={() => h(book.id)}
+              >
+                subscribe book
+              </Button>
+            </Flex>
           </Box>
         ))}
       </MainContainerWidth>

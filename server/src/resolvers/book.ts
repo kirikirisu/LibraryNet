@@ -88,44 +88,59 @@ export class BookResolver {
     @Ctx() { req }: MyContext
   ): Promise<SubscribeResponse> {
     const {userId} = req.session
-    const user = await User.findOne({ where: {id: userId}})
+    // 本を借りる人
+    const subscriber = await User.findOne({ where: {id: userId}})
     const book = await Book.findOne({ where: { id }})
-    // const library = await Library.findOne({ where: { adminId: userId }})
+    const library = await Library.findOne({ where: { adminId: book?.ownerId }})
+    // 借りる本が組織からなのか個人からなのか
+    // libraryからorganizationを参照するより、userから参照したい
+    // const publisher = User.findOne({ where: { id: book.ownerId } })
+    // publisher.organization
+
+    // 借りる人が組織なのか個人なのか(組織は本を借りることができない)
+    // TODO:userからorganizationフラグを参照したい
 
     if (userId === book?.ownerId) {
       return { errors: "can not subscribe own book" }
     }
 
     if (!book) {}
-    if (!user) {
+    if (!subscriber) {
       return { errors: "can not find user"}
     }
 
     if (!book?.available) {
-      return { errors: "already subscribed" }
+      return { errors: "already subscribed other" }
     }
 
     console.log("-------------------------done sub---------------------------")
-    await getConnection()
-        .createQueryBuilder()
-        .update(Book)
-        .set({
-          available: false
-        })
-        .where("id = :id", {id: id})
-        .execute()
+    if (library?.organization) {
+      // change book state
+      await getConnection()
+          .createQueryBuilder()
+          .update(Book)
+          .set({
+            available: false
+          })
+          .where("id = :id", {id: id})
+          .execute()
 
-    let shared = await SharedBook.create({
-      publisherId: book?.ownerId,
-      subscriberId: userId,
-      bookId: id,
-    }).save()
 
-    const status = await sendMessageToChannel({ user, book})
+      let shared = await SharedBook.create({
+        publisherId: book?.ownerId,
+        subscriberId: userId,
+        bookId: id,
+      }).save()
 
-    console.log("status", status)
+      const status = await sendMessageToChannel({ user: subscriber, book})
 
-    return {shared: true}
+      console.log("status", status)
+      const sucsess = status === 200
+
+      return { shared: sucsess}
+
+    }
+      return {shared: true}
   }
 
   // @Mutation(() => Number, {nullable: true})

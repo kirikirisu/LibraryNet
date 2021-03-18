@@ -46,20 +46,19 @@ export const sendMessageToChannel = async (exc: ExchangeInfo) => {
             "alt_text": "book icon"
           }
         },
-        {
-          "type": "section",
-          "block_id": "section789",
-          "fields": [
-            {
-              "type": "mrkdwn",
-              "text": "some coment"
-            }
-          ]
-        }
+        // {
+        //   "type": "section",
+        //   "block_id": "section789",
+        //   "fields": [
+        //     {
+        //       "type": "mrkdwn",
+        //       "text": "some coment"
+        //     }
+        //   ]
+        // }
     ]
 
     const data = {
-      "text": "この本借ります！！",
       "blocks": [...block],
     }
 
