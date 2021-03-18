@@ -3,6 +3,7 @@ import {
   Arg,
   Ctx,
   Field,
+  FieldResolver,
   Mutation,
   ObjectType,
   Query,
@@ -23,8 +24,9 @@ class LibraryResponse {
 }
 // const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-@Resolver()
+@Resolver(Library)
 export class LibraryResolver {
+
   @Mutation(() => LibraryResponse)
   @UseMiddleware(isAuth)
   async createLibrary(
@@ -62,22 +64,6 @@ export class LibraryResolver {
 
   // @Mutation(() => Library)
   // updateLibrary(){}
-
-  @Query(() => Boolean, { nullable: true })
-  async hasLibrary(@Ctx() { req }: MyContext) {
-    const { userId } = req.session;
-    if (!userId) {
-      return null;
-    }
-    const library = await Library.findOne({ where: { adminId: userId } });
-
-    // libraryを作っていない
-    if (!library) {
-      return false;
-    }
-
-    return true;
-  }
 
   @Query(() => [Library], { nullable: true })
   async librarys() {

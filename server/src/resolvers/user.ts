@@ -3,10 +3,12 @@ import {
   Arg,
   Ctx,
   Field,
+  FieldResolver,
   Mutation,
   ObjectType,
   Query,
   Resolver,
+  Root,
 } from 'type-graphql';
 import argon2 from 'argon2';
 import { getConnection } from 'typeorm';
@@ -14,6 +16,7 @@ import { FieldError, MyContext } from '../types';
 import { validateRejister } from '../utils/validateRegister';
 import { RegisterInput } from './RegisterInput';
 import { COOKIE_NAME } from '../constants';
+import { Library } from '../entities/Library';
 
 @ObjectType()
 class UserResponse {
@@ -26,6 +29,24 @@ class UserResponse {
 
 @Resolver(User)
 export class UserResolver {
+  @FieldResolver(() => Boolean, {nullable: true})
+  async hasLibrary(
+    @Ctx() { req }: MyContext
+    ): Promise<boolean | null> {
+    const { userId } = req.session;
+    if (!userId) {
+      return null;
+    }
+    const library = await Library.findOne({ where: { adminId: userId } });
+
+    // libraryを作っていない
+    if (!library) {
+      return false;
+    }
+
+    return true;
+  }
+
   @Query(() => User, { nullable: true })
   me(@Ctx() { req }: MyContext) {
     if (!req.session.userId) {

@@ -24,9 +24,10 @@ import {
   MeDocument,
 } from '../generated/graphql';
 import NextLink from 'next/link';
+import { isServer } from '../utils/isServer';
 
 export const Header: React.FC = () => {
-  const { data, loading } = useMeQuery({ skip: typeof window === 'undefined' });
+  const { data, loading } = useMeQuery({ skip: isServer() });
   const [logout, { loading: logoutLoading }] = useLogoutMutation();
 
   // const apolloClient = useApolloClient();

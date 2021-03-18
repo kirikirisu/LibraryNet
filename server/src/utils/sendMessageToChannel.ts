@@ -1,12 +1,21 @@
 import axios from 'axios'
 import { Book } from '../entities/Book'
 import { User } from '../entities/User'
-import { omitString } from '../../../web/src/utils/omitString'
 
 type ExchangeInfo = {
   user: User;
   book: Book;
 }
+
+const omitString = (t: string) => {
+  const max = 150;
+
+  if (t.length > max) {
+    return t.substr(0, max) + '...';
+  }
+
+  return t;
+};
 
 export const sendMessageToChannel = async (exc: ExchangeInfo) => {
   const { username } = exc.user;

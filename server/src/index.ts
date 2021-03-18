@@ -38,6 +38,15 @@ const main = async () => {
   //     .where("bookId = :id", {id: 15})
   //     .execute()
 
+      // conn.createQueryBuilder()
+      //   .createQueryBuilder()
+      //   .update(Book)
+      //   .set({
+      //     available: true
+      //   })
+      //   .where("id = :id", {id: 15})
+      //   .execute()
+
   const app = express();
   const RedisStore = connectRedis(session);
   const redis = new Redis();
