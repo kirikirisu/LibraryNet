@@ -1,14 +1,10 @@
 import { gql } from '@apollo/client';
 import * as Apollo from '@apollo/client';
 export type Maybe<T> = T | null;
-export type Exact<T extends { [key: string]: unknown }> = {
-  [K in keyof T]: T[K];
-};
-export type MakeOptional<T, K extends keyof T> = Omit<T, K> &
-  { [SubKey in K]?: Maybe<T[SubKey]> };
-export type MakeMaybe<T, K extends keyof T> = Omit<T, K> &
-  { [SubKey in K]: Maybe<T[SubKey]> };
-const defaultOptions = {};
+export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
+export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
+export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
+const defaultOptions =  {}
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -26,9 +22,11 @@ export type Query = {
   book?: Maybe<Book>;
 };
 
+
 export type QueryBooksArgs = {
   id: Scalars['Int'];
 };
+
 
 export type QueryBookArgs = {
   id: Scalars['Int'];
@@ -40,6 +38,7 @@ export type User = {
   username: Scalars['String'];
   email: Scalars['String'];
   password: Scalars['String'];
+  organization: Scalars['Boolean'];
   createdAt: Scalars['String'];
   updatedAt: Scalars['String'];
   hasLibrary?: Maybe<Scalars['Boolean']>;
@@ -51,7 +50,6 @@ export type Library = {
   title: Scalars['String'];
   description: Scalars['String'];
   icon: Scalars['String'];
-  organization: Scalars['Boolean'];
   adminId: Scalars['Float'];
   createdAt: Scalars['String'];
   updatedAt: Scalars['String'];
@@ -64,7 +62,7 @@ export type Book = {
   description: Scalars['String'];
   img: Scalars['String'];
   inforLink: Scalars['String'];
-  available: Scalars['Boolean'];
+  available: Scalars['String'];
   ownerId: Scalars['Float'];
   createdAt: Scalars['String'];
   updatedAt: Scalars['String'];
@@ -80,22 +78,27 @@ export type Mutation = {
   subscribeBook: SubscribeResponse;
 };
 
+
 export type MutationRegisterArgs = {
   options: RegisterInput;
 };
+
 
 export type MutationLoginArgs = {
   password: Scalars['String'];
   usernameOrEmail: Scalars['String'];
 };
 
+
 export type MutationCreateLibraryArgs = {
   input: LibraryInput;
 };
 
+
 export type MutationPublishBookArgs = {
   input: BookInput;
 };
+
 
 export type MutationSubscribeBookArgs = {
   id: Scalars['Float'];
@@ -117,6 +120,7 @@ export type RegisterInput = {
   email: Scalars['String'];
   username: Scalars['String'];
   password: Scalars['String'];
+  organization: Scalars['Boolean'];
 };
 
 export type LibraryResponse = {
@@ -129,7 +133,6 @@ export type LibraryInput = {
   title: Scalars['String'];
   description: Scalars['String'];
   icon: Scalars['String'];
-  organization: Scalars['Boolean'];
 };
 
 export type BookResponse = {
@@ -143,7 +146,7 @@ export type BookInput = {
   description: Scalars['String'];
   img: Scalars['String'];
   inforLink: Scalars['String'];
-  available: Scalars['Boolean'];
+  available: Scalars['String'];
 };
 
 export type SubscribeResponse = {
@@ -156,139 +159,138 @@ export type CreateLibraryMutationVariables = Exact<{
   input: LibraryInput;
 }>;
 
-export type CreateLibraryMutation = { __typename?: 'Mutation' } & {
-  createLibrary: { __typename?: 'LibraryResponse' } & {
-    library?: Maybe<
-      { __typename?: 'Library' } & Pick<
-        Library,
-        'id' | 'title' | 'description' | 'icon' | 'organization'
-      >
-    >;
-    errors?: Maybe<
-      Array<
-        { __typename?: 'FieldError' } & Pick<FieldError, 'field' | 'message'>
-      >
-    >;
-  };
-};
+
+export type CreateLibraryMutation = (
+  { __typename?: 'Mutation' }
+  & { createLibrary: (
+    { __typename?: 'LibraryResponse' }
+    & { library?: Maybe<(
+      { __typename?: 'Library' }
+      & Pick<Library, 'id' | 'title' | 'description' | 'icon'>
+    )>, errors?: Maybe<Array<(
+      { __typename?: 'FieldError' }
+      & Pick<FieldError, 'field' | 'message'>
+    )>> }
+  ) }
+);
 
 export type LoginMutationVariables = Exact<{
   usernameOrEmail: Scalars['String'];
   password: Scalars['String'];
 }>;
 
-export type LoginMutation = { __typename?: 'Mutation' } & {
-  login: { __typename?: 'UserResponse' } & {
-    user?: Maybe<{ __typename?: 'User' } & Pick<User, 'id' | 'username'>>;
-    errors?: Maybe<
-      Array<
-        { __typename?: 'FieldError' } & Pick<FieldError, 'field' | 'message'>
-      >
-    >;
-  };
-};
 
-export type LogoutMutationVariables = Exact<{ [key: string]: never }>;
+export type LoginMutation = (
+  { __typename?: 'Mutation' }
+  & { login: (
+    { __typename?: 'UserResponse' }
+    & { user?: Maybe<(
+      { __typename?: 'User' }
+      & Pick<User, 'id' | 'username'>
+    )>, errors?: Maybe<Array<(
+      { __typename?: 'FieldError' }
+      & Pick<FieldError, 'field' | 'message'>
+    )>> }
+  ) }
+);
 
-export type LogoutMutation = { __typename?: 'Mutation' } & Pick<
-  Mutation,
-  'logout'
->;
+export type LogoutMutationVariables = Exact<{ [key: string]: never; }>;
+
+
+export type LogoutMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'logout'>
+);
 
 export type PublishBookMutationVariables = Exact<{
   input: BookInput;
 }>;
 
-export type PublishBookMutation = { __typename?: 'Mutation' } & {
-  publishBook: { __typename?: 'BookResponse' } & Pick<
-    BookResponse,
-    'errors'
-  > & {
-      book?: Maybe<
-        { __typename?: 'Book' } & Pick<
-          Book,
-          'title' | 'img' | 'inforLink' | 'available'
-        >
-      >;
-    };
-};
+
+export type PublishBookMutation = (
+  { __typename?: 'Mutation' }
+  & { publishBook: (
+    { __typename?: 'BookResponse' }
+    & Pick<BookResponse, 'errors'>
+    & { book?: Maybe<(
+      { __typename?: 'Book' }
+      & Pick<Book, 'title' | 'img' | 'inforLink' | 'available'>
+    )> }
+  ) }
+);
 
 export type RegisterMutationVariables = Exact<{
   options: RegisterInput;
 }>;
 
-export type RegisterMutation = { __typename?: 'Mutation' } & {
-  register: { __typename?: 'UserResponse' } & {
-    user?: Maybe<{ __typename?: 'User' } & Pick<User, 'id' | 'username'>>;
-    errors?: Maybe<
-      Array<
-        { __typename?: 'FieldError' } & Pick<FieldError, 'field' | 'message'>
-      >
-    >;
-  };
-};
+
+export type RegisterMutation = (
+  { __typename?: 'Mutation' }
+  & { register: (
+    { __typename?: 'UserResponse' }
+    & { user?: Maybe<(
+      { __typename?: 'User' }
+      & Pick<User, 'id' | 'username'>
+    )>, errors?: Maybe<Array<(
+      { __typename?: 'FieldError' }
+      & Pick<FieldError, 'field' | 'message'>
+    )>> }
+  ) }
+);
 
 export type BooksQueryVariables = Exact<{
   id: Scalars['Int'];
 }>;
 
-export type BooksQuery = { __typename?: 'Query' } & {
-  books: Array<
-    { __typename?: 'Book' } & Pick<
-      Book,
-      | 'id'
-      | 'description'
-      | 'title'
-      | 'img'
-      | 'inforLink'
-      | 'available'
-      | 'ownerId'
-    >
-  >;
-};
 
-export type LibrarysQueryVariables = Exact<{ [key: string]: never }>;
+export type BooksQuery = (
+  { __typename?: 'Query' }
+  & { books: Array<(
+    { __typename?: 'Book' }
+    & Pick<Book, 'id' | 'description' | 'title' | 'img' | 'inforLink' | 'available' | 'ownerId'>
+  )> }
+);
 
-export type LibrarysQuery = { __typename?: 'Query' } & {
-  librarys?: Maybe<
-    Array<
-      { __typename?: 'Library' } & Pick<
-        Library,
-        'id' | 'title' | 'description' | 'icon' | 'organization' | 'adminId'
-      >
-    >
-  >;
-};
+export type LibrarysQueryVariables = Exact<{ [key: string]: never; }>;
 
-export type MeQueryVariables = Exact<{ [key: string]: never }>;
 
-export type MeQuery = { __typename?: 'Query' } & {
-  me?: Maybe<
-    { __typename?: 'User' } & Pick<User, 'id' | 'username' | 'hasLibrary'>
-  >;
-};
+export type LibrarysQuery = (
+  { __typename?: 'Query' }
+  & { librarys?: Maybe<Array<(
+    { __typename?: 'Library' }
+    & Pick<Library, 'id' | 'title' | 'description' | 'icon' | 'adminId'>
+  )>> }
+);
+
+export type MeQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type MeQuery = (
+  { __typename?: 'Query' }
+  & { me?: Maybe<(
+    { __typename?: 'User' }
+    & Pick<User, 'id' | 'username' | 'hasLibrary'>
+  )> }
+);
+
 
 export const CreateLibraryDocument = gql`
-  mutation createLibrary($input: LibraryInput!) {
-    createLibrary(input: $input) {
-      library {
-        id
-        title
-        description
-        icon
-        organization
-      }
-      errors {
-        field
-        message
-      }
+    mutation createLibrary($input: LibraryInput!) {
+  createLibrary(input: $input) {
+    library {
+      id
+      title
+      description
+      icon
+    }
+    errors {
+      field
+      message
     }
   }
-`;
-export type CreateLibraryMutationFn = Apollo.MutationFunction<
-  CreateLibraryMutation,
-  CreateLibraryMutationVariables
->;
+}
+    `;
+export type CreateLibraryMutationFn = Apollo.MutationFunction<CreateLibraryMutation, CreateLibraryMutationVariables>;
 
 /**
  * __useCreateLibraryMutation__
@@ -307,44 +309,28 @@ export type CreateLibraryMutationFn = Apollo.MutationFunction<
  *   },
  * });
  */
-export function useCreateLibraryMutation(
-  baseOptions?: Apollo.MutationHookOptions<
-    CreateLibraryMutation,
-    CreateLibraryMutationVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useMutation<
-    CreateLibraryMutation,
-    CreateLibraryMutationVariables
-  >(CreateLibraryDocument, options);
-}
-export type CreateLibraryMutationHookResult = ReturnType<
-  typeof useCreateLibraryMutation
->;
+export function useCreateLibraryMutation(baseOptions?: Apollo.MutationHookOptions<CreateLibraryMutation, CreateLibraryMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateLibraryMutation, CreateLibraryMutationVariables>(CreateLibraryDocument, options);
+      }
+export type CreateLibraryMutationHookResult = ReturnType<typeof useCreateLibraryMutation>;
 export type CreateLibraryMutationResult = Apollo.MutationResult<CreateLibraryMutation>;
-export type CreateLibraryMutationOptions = Apollo.BaseMutationOptions<
-  CreateLibraryMutation,
-  CreateLibraryMutationVariables
->;
+export type CreateLibraryMutationOptions = Apollo.BaseMutationOptions<CreateLibraryMutation, CreateLibraryMutationVariables>;
 export const LoginDocument = gql`
-  mutation Login($usernameOrEmail: String!, $password: String!) {
-    login(usernameOrEmail: $usernameOrEmail, password: $password) {
-      user {
-        id
-        username
-      }
-      errors {
-        field
-        message
-      }
+    mutation Login($usernameOrEmail: String!, $password: String!) {
+  login(usernameOrEmail: $usernameOrEmail, password: $password) {
+    user {
+      id
+      username
+    }
+    errors {
+      field
+      message
     }
   }
-`;
-export type LoginMutationFn = Apollo.MutationFunction<
-  LoginMutation,
-  LoginMutationVariables
->;
+}
+    `;
+export type LoginMutationFn = Apollo.MutationFunction<LoginMutation, LoginMutationVariables>;
 
 /**
  * __useLoginMutation__
@@ -364,33 +350,19 @@ export type LoginMutationFn = Apollo.MutationFunction<
  *   },
  * });
  */
-export function useLoginMutation(
-  baseOptions?: Apollo.MutationHookOptions<
-    LoginMutation,
-    LoginMutationVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useMutation<LoginMutation, LoginMutationVariables>(
-    LoginDocument,
-    options
-  );
-}
+export function useLoginMutation(baseOptions?: Apollo.MutationHookOptions<LoginMutation, LoginMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<LoginMutation, LoginMutationVariables>(LoginDocument, options);
+      }
 export type LoginMutationHookResult = ReturnType<typeof useLoginMutation>;
 export type LoginMutationResult = Apollo.MutationResult<LoginMutation>;
-export type LoginMutationOptions = Apollo.BaseMutationOptions<
-  LoginMutation,
-  LoginMutationVariables
->;
+export type LoginMutationOptions = Apollo.BaseMutationOptions<LoginMutation, LoginMutationVariables>;
 export const LogoutDocument = gql`
-  mutation Logout {
-    logout
-  }
-`;
-export type LogoutMutationFn = Apollo.MutationFunction<
-  LogoutMutation,
-  LogoutMutationVariables
->;
+    mutation Logout {
+  logout
+}
+    `;
+export type LogoutMutationFn = Apollo.MutationFunction<LogoutMutation, LogoutMutationVariables>;
 
 /**
  * __useLogoutMutation__
@@ -408,41 +380,27 @@ export type LogoutMutationFn = Apollo.MutationFunction<
  *   },
  * });
  */
-export function useLogoutMutation(
-  baseOptions?: Apollo.MutationHookOptions<
-    LogoutMutation,
-    LogoutMutationVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useMutation<LogoutMutation, LogoutMutationVariables>(
-    LogoutDocument,
-    options
-  );
-}
+export function useLogoutMutation(baseOptions?: Apollo.MutationHookOptions<LogoutMutation, LogoutMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<LogoutMutation, LogoutMutationVariables>(LogoutDocument, options);
+      }
 export type LogoutMutationHookResult = ReturnType<typeof useLogoutMutation>;
 export type LogoutMutationResult = Apollo.MutationResult<LogoutMutation>;
-export type LogoutMutationOptions = Apollo.BaseMutationOptions<
-  LogoutMutation,
-  LogoutMutationVariables
->;
+export type LogoutMutationOptions = Apollo.BaseMutationOptions<LogoutMutation, LogoutMutationVariables>;
 export const PublishBookDocument = gql`
-  mutation publishBook($input: BookInput!) {
-    publishBook(input: $input) {
-      book {
-        title
-        img
-        inforLink
-        available
-      }
-      errors
+    mutation publishBook($input: BookInput!) {
+  publishBook(input: $input) {
+    book {
+      title
+      img
+      inforLink
+      available
     }
+    errors
   }
-`;
-export type PublishBookMutationFn = Apollo.MutationFunction<
-  PublishBookMutation,
-  PublishBookMutationVariables
->;
+}
+    `;
+export type PublishBookMutationFn = Apollo.MutationFunction<PublishBookMutation, PublishBookMutationVariables>;
 
 /**
  * __usePublishBookMutation__
@@ -461,44 +419,28 @@ export type PublishBookMutationFn = Apollo.MutationFunction<
  *   },
  * });
  */
-export function usePublishBookMutation(
-  baseOptions?: Apollo.MutationHookOptions<
-    PublishBookMutation,
-    PublishBookMutationVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useMutation<PublishBookMutation, PublishBookMutationVariables>(
-    PublishBookDocument,
-    options
-  );
-}
-export type PublishBookMutationHookResult = ReturnType<
-  typeof usePublishBookMutation
->;
+export function usePublishBookMutation(baseOptions?: Apollo.MutationHookOptions<PublishBookMutation, PublishBookMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<PublishBookMutation, PublishBookMutationVariables>(PublishBookDocument, options);
+      }
+export type PublishBookMutationHookResult = ReturnType<typeof usePublishBookMutation>;
 export type PublishBookMutationResult = Apollo.MutationResult<PublishBookMutation>;
-export type PublishBookMutationOptions = Apollo.BaseMutationOptions<
-  PublishBookMutation,
-  PublishBookMutationVariables
->;
+export type PublishBookMutationOptions = Apollo.BaseMutationOptions<PublishBookMutation, PublishBookMutationVariables>;
 export const RegisterDocument = gql`
-  mutation Register($options: RegisterInput!) {
-    register(options: $options) {
-      user {
-        id
-        username
-      }
-      errors {
-        field
-        message
-      }
+    mutation Register($options: RegisterInput!) {
+  register(options: $options) {
+    user {
+      id
+      username
+    }
+    errors {
+      field
+      message
     }
   }
-`;
-export type RegisterMutationFn = Apollo.MutationFunction<
-  RegisterMutation,
-  RegisterMutationVariables
->;
+}
+    `;
+export type RegisterMutationFn = Apollo.MutationFunction<RegisterMutation, RegisterMutationVariables>;
 
 /**
  * __useRegisterMutation__
@@ -517,37 +459,26 @@ export type RegisterMutationFn = Apollo.MutationFunction<
  *   },
  * });
  */
-export function useRegisterMutation(
-  baseOptions?: Apollo.MutationHookOptions<
-    RegisterMutation,
-    RegisterMutationVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useMutation<RegisterMutation, RegisterMutationVariables>(
-    RegisterDocument,
-    options
-  );
-}
+export function useRegisterMutation(baseOptions?: Apollo.MutationHookOptions<RegisterMutation, RegisterMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<RegisterMutation, RegisterMutationVariables>(RegisterDocument, options);
+      }
 export type RegisterMutationHookResult = ReturnType<typeof useRegisterMutation>;
 export type RegisterMutationResult = Apollo.MutationResult<RegisterMutation>;
-export type RegisterMutationOptions = Apollo.BaseMutationOptions<
-  RegisterMutation,
-  RegisterMutationVariables
->;
+export type RegisterMutationOptions = Apollo.BaseMutationOptions<RegisterMutation, RegisterMutationVariables>;
 export const BooksDocument = gql`
-  query Books($id: Int!) {
-    books(id: $id) {
-      id
-      description
-      title
-      img
-      inforLink
-      available
-      ownerId
-    }
+    query Books($id: Int!) {
+  books(id: $id) {
+    id
+    description
+    title
+    img
+    inforLink
+    available
+    ownerId
   }
-`;
+}
+    `;
 
 /**
  * __useBooksQuery__
@@ -565,42 +496,28 @@ export const BooksDocument = gql`
  *   },
  * });
  */
-export function useBooksQuery(
-  baseOptions: Apollo.QueryHookOptions<BooksQuery, BooksQueryVariables>
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useQuery<BooksQuery, BooksQueryVariables>(
-    BooksDocument,
-    options
-  );
-}
-export function useBooksLazyQuery(
-  baseOptions?: Apollo.LazyQueryHookOptions<BooksQuery, BooksQueryVariables>
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useLazyQuery<BooksQuery, BooksQueryVariables>(
-    BooksDocument,
-    options
-  );
-}
+export function useBooksQuery(baseOptions: Apollo.QueryHookOptions<BooksQuery, BooksQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<BooksQuery, BooksQueryVariables>(BooksDocument, options);
+      }
+export function useBooksLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<BooksQuery, BooksQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<BooksQuery, BooksQueryVariables>(BooksDocument, options);
+        }
 export type BooksQueryHookResult = ReturnType<typeof useBooksQuery>;
 export type BooksLazyQueryHookResult = ReturnType<typeof useBooksLazyQuery>;
-export type BooksQueryResult = Apollo.QueryResult<
-  BooksQuery,
-  BooksQueryVariables
->;
+export type BooksQueryResult = Apollo.QueryResult<BooksQuery, BooksQueryVariables>;
 export const LibrarysDocument = gql`
-  query Librarys {
-    librarys {
-      id
-      title
-      description
-      icon
-      organization
-      adminId
-    }
+    query Librarys {
+  librarys {
+    id
+    title
+    description
+    icon
+    adminId
   }
-`;
+}
+    `;
 
 /**
  * __useLibrarysQuery__
@@ -617,44 +534,26 @@ export const LibrarysDocument = gql`
  *   },
  * });
  */
-export function useLibrarysQuery(
-  baseOptions?: Apollo.QueryHookOptions<LibrarysQuery, LibrarysQueryVariables>
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useQuery<LibrarysQuery, LibrarysQueryVariables>(
-    LibrarysDocument,
-    options
-  );
-}
-export function useLibrarysLazyQuery(
-  baseOptions?: Apollo.LazyQueryHookOptions<
-    LibrarysQuery,
-    LibrarysQueryVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useLazyQuery<LibrarysQuery, LibrarysQueryVariables>(
-    LibrarysDocument,
-    options
-  );
-}
+export function useLibrarysQuery(baseOptions?: Apollo.QueryHookOptions<LibrarysQuery, LibrarysQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<LibrarysQuery, LibrarysQueryVariables>(LibrarysDocument, options);
+      }
+export function useLibrarysLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<LibrarysQuery, LibrarysQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<LibrarysQuery, LibrarysQueryVariables>(LibrarysDocument, options);
+        }
 export type LibrarysQueryHookResult = ReturnType<typeof useLibrarysQuery>;
-export type LibrarysLazyQueryHookResult = ReturnType<
-  typeof useLibrarysLazyQuery
->;
-export type LibrarysQueryResult = Apollo.QueryResult<
-  LibrarysQuery,
-  LibrarysQueryVariables
->;
+export type LibrarysLazyQueryHookResult = ReturnType<typeof useLibrarysLazyQuery>;
+export type LibrarysQueryResult = Apollo.QueryResult<LibrarysQuery, LibrarysQueryVariables>;
 export const MeDocument = gql`
-  query Me {
-    me {
-      id
-      username
-      hasLibrary
-    }
+    query Me {
+  me {
+    id
+    username
+    hasLibrary
   }
-`;
+}
+    `;
 
 /**
  * __useMeQuery__
@@ -671,18 +570,14 @@ export const MeDocument = gql`
  *   },
  * });
  */
-export function useMeQuery(
-  baseOptions?: Apollo.QueryHookOptions<MeQuery, MeQueryVariables>
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useQuery<MeQuery, MeQueryVariables>(MeDocument, options);
-}
-export function useMeLazyQuery(
-  baseOptions?: Apollo.LazyQueryHookOptions<MeQuery, MeQueryVariables>
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useLazyQuery<MeQuery, MeQueryVariables>(MeDocument, options);
-}
+export function useMeQuery(baseOptions?: Apollo.QueryHookOptions<MeQuery, MeQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<MeQuery, MeQueryVariables>(MeDocument, options);
+      }
+export function useMeLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<MeQuery, MeQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<MeQuery, MeQueryVariables>(MeDocument, options);
+        }
 export type MeQueryHookResult = ReturnType<typeof useMeQuery>;
 export type MeLazyQueryHookResult = ReturnType<typeof useMeLazyQuery>;
 export type MeQueryResult = Apollo.QueryResult<MeQuery, MeQueryVariables>;

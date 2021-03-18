@@ -1,4 +1,4 @@
-import { Box, Button, Checkbox } from '@chakra-ui/react';
+import { Box, Button } from '@chakra-ui/react';
 import { Formik, Form } from 'formik';
 import React from 'react';
 import { InputField } from '../components/InputField';
@@ -9,14 +9,7 @@ import withApollo from '../utils/withApollo';
 
 const CreateLibrary: React.FC = () => {
   // const router = useRouter();
-  const [checked, setChecked] = React.useState<boolean>(false);
   const [createLibrary] = useCreateLibraryMutation();
-
-  const toggleCheck = (e: React.ChangeEvent<HTMLInputElement>) => {
-    e.preventDefault();
-    // console.log(e.target.checked)
-    setChecked(e.target.checked);
-  };
 
   return (
     <Box maxW="xl" mx="auto">
@@ -25,7 +18,7 @@ const CreateLibrary: React.FC = () => {
         onSubmit={async (values, { setErrors }) => {
           try {
             const res = await createLibrary({
-              variables: { input: { ...values, organization: checked } },
+              variables: { input: { ...values } },
             });
 
             if (res.data?.createLibrary.errors) {
@@ -50,11 +43,6 @@ const CreateLibrary: React.FC = () => {
             </Box>
             <Box my="5">
               <InputField name="icon" placeholder="icon" label="Icon" />
-            </Box>
-            <Box my="5">
-              <Checkbox isChecked={checked} onChange={(e) => toggleCheck(e)}>
-                Organization
-              </Checkbox>
             </Box>
             <Button
               mt={4}

@@ -50,7 +50,7 @@ const Index: any = () => {
                 letterSpacing="wide"
                 color="teal.600"
               >
-                {lib.organization ? 'organization' : 'individual'}
+                Some label
               </Text>
               <NextLink href={`/shelf/${lib.adminId}`}>
                 <Link

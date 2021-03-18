@@ -32,10 +32,6 @@ export class Library extends BaseEntity {
   icon!: string;
 
   @Field()
-  @Column()
-  organization!: boolean;
-
-  @Field()
   @PrimaryColumn()
   adminId: number;
 

@@ -35,7 +35,7 @@ class BookInput {
   inforLink: string;
 
   @Field()
-  available: boolean;
+  available: "valid" | "asking" | "invalid";
 }
 
 @ObjectType()
@@ -114,13 +114,13 @@ export class BookResolver {
     }
 
     console.log("-------------------------done sub---------------------------")
-    if (library?.organization) {
+    if (true) {
       // change book state
       await getConnection()
           .createQueryBuilder()
           .update(Book)
           .set({
-            available: false
+            available: "invalid"
           })
           .where("id = :id", {id: id})
           .execute()

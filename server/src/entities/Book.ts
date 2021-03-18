@@ -37,7 +37,7 @@ export class Book extends BaseEntity {
 
   @Field()
   @Column()
-  available!: boolean;
+  available!: "valid" | "asking" | "invalid";
 
   @Field()
   @Column()

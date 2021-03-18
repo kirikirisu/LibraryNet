@@ -27,7 +27,4 @@ export class LibraryInput {
 
   @Field()
   icon: string;
-
-  @Field()
-  organization: boolean;
 }

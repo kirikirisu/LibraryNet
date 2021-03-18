@@ -5,7 +5,6 @@ mutation createLibrary($input: LibraryInput!) {
       title
       description
       icon
-      organization
     }
     errors {
       field

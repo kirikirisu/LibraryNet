@@ -77,6 +77,7 @@ export class UserResolver {
           username: options.username,
           email: options.email,
           password: hashedPassword,
+          organization: options.organization
         })
         .returning('*')
         .execute();

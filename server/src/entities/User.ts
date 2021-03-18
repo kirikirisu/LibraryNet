@@ -30,6 +30,10 @@ export class User extends BaseEntity {
   @Column()
   password!: string;
 
+  @Field()
+  @Column()
+  organization!: boolean;
+
   @OneToMany(() => Book, (book) => book.owner)
   books: Book[];
 
