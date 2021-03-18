@@ -38,14 +38,14 @@ const main = async () => {
   //     .where("bookId = :id", {id: 15})
   //     .execute()
 
-      // conn.createQueryBuilder()
-      //   .createQueryBuilder()
-      //   .update(Book)
-      //   .set({
-      //     available: true
-      //   })
-      //   .where("id = :id", {id: 15})
-      //   .execute()
+  // conn.createQueryBuilder()
+  //   .createQueryBuilder()
+  //   .update(Book)
+  //   .set({
+  //     available: "valid"
+  //   })
+  //   .where("id = :id", {id: 17})
+  //   .execute()
 
   const app = express();
   const RedisStore = connectRedis(session);

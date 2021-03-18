@@ -19,6 +19,7 @@ import {getConnection} from "typeorm";
 import { User } from '../entities/User';
 import { sendMessageToChannel } from '../utils/sendMessageToChannel';
 
+type Available = "vaild" | "asking" | "invalid";
 
 @InputType()
 class BookInput {
@@ -84,17 +85,18 @@ export class BookResolver {
   @Mutation(() => SubscribeResponse)
   @UseMiddleware(isAuth)
   async subscribeBook(
-    @Arg('id') id: number,
+    @Arg('id', () => Int) id: number,
     @Ctx() { req }: MyContext
   ): Promise<SubscribeResponse> {
     const {userId} = req.session
     // 本を借りる人
     const subscriber = await User.findOne({ where: {id: userId}})
     const book = await Book.findOne({ where: { id }})
+    const publisher = await User.findOne({ where: { id: book?.ownerId } })
+
     const library = await Library.findOne({ where: { adminId: book?.ownerId }})
     // 借りる本が組織からなのか個人からなのか
     // libraryからorganizationを参照するより、userから参照したい
-    // const publisher = User.findOne({ where: { id: book.ownerId } })
     // publisher.organization
 
     // 借りる人が組織なのか個人なのか(組織は本を借りることができない)
@@ -109,12 +111,19 @@ export class BookResolver {
       return { errors: "can not find user"}
     }
 
-    if (!book?.available) {
+    if (book?.available === "invalid") {
       return { errors: "already subscribed other" }
     }
 
-    console.log("-------------------------done sub---------------------------")
-    if (true) {
+    // 組織が本を借りることはない
+    if (subscriber.organization) {
+      return { errors: "organization can not subscribe" }
+    }
+
+    console.log("-------------------------done subscription---------------------------")
+    let shared
+    // 組織から本を借りる場合
+    if (publisher?.organization) {
       // change book state
       await getConnection()
           .createQueryBuilder()
@@ -125,8 +134,8 @@ export class BookResolver {
           .where("id = :id", {id: id})
           .execute()
 
-
-      let shared = await SharedBook.create({
+      // insert & select
+      await SharedBook.create({
         publisherId: book?.ownerId,
         subscriberId: userId,
         bookId: id,
@@ -135,12 +144,14 @@ export class BookResolver {
       const status = await sendMessageToChannel({ user: subscriber, book})
 
       console.log("status", status)
-      const sucsess = status === 200
+      shared = status === 200
 
-      return { shared: sucsess}
+    // 個人から本を借りる場合
+    } else {
 
     }
-      return {shared: true}
+
+    return {shared}
   }
 
   // @Mutation(() => Number, {nullable: true})

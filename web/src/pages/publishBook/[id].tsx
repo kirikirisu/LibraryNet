@@ -48,7 +48,7 @@ const PublishBook = () => {
       description: desc,
       img: imgLin,
       inforLink: infoLink,
-      available: true,
+      available: 'vaild',
     };
 
     try {

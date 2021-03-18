@@ -1,10 +1,13 @@
 import { Flex, Box, Text, Img, Link, Button } from '@chakra-ui/react';
-import { useBooksQuery } from '../../generated/graphql';
+import {
+  useBooksQuery,
+  useSubscribeBookMutation,
+} from '../../generated/graphql';
 import { useGetId } from '../../utils/useGetId';
 import withApollo from '../../utils/withApollo';
 import MainContainerWidth from '../../components/MainContainerWidth';
-import NextLink from 'next/link';
 import { omitString } from '../../utils/omitString';
+import { useRouter } from 'next/router';
 
 const h = (n: number): void => {
   console.log(n);
@@ -12,6 +15,9 @@ const h = (n: number): void => {
 
 const Shelf: React.FC = () => {
   const intId = useGetId();
+  const router = useRouter();
+
+  const [subscribe] = useSubscribeBookMutation();
 
   const { data, loading, error } = useBooksQuery({
     skip: intId === -1,
@@ -73,7 +79,15 @@ const Shelf: React.FC = () => {
                 mr="4"
                 colorScheme="teal"
                 variant="outline"
-                onClick={() => h(book.id)}
+                onClick={async () => {
+                  console.log(book.id);
+                  const res = await subscribe({ variables: { id: book.id } });
+                  if (res.data?.subscribeBook.errors) {
+                    alert(res.data.subscribeBook.errors);
+                  } else {
+                    router.push('/');
+                  }
+                }}
               >
                 subscribe book
               </Button>

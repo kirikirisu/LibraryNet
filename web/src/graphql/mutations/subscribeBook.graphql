@@ -1,0 +1,6 @@
+mutation SubscribeBook($id: Int!){
+  subscribeBook(id: $id){
+   errors
+   shared
+  }
+}
