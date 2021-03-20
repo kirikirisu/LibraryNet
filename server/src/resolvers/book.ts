@@ -62,7 +62,7 @@ export class BookResolver {
   @FieldResolver(() => Int, {nullable: true})
   async subscriberId(
     @Root() book: Book,
-    @Ctx() {sharedLoader}
+    @Ctx() {sharedLoader}: MyContext
     ): Promise<number> {
       // const sharedBook = await SharedBook.findOne({where: { bookId: book.id }})
 
@@ -75,6 +75,7 @@ export class BookResolver {
 
       // return null;
   }
+
 
   @Mutation(() => BookResponse)
   @UseMiddleware(isAuth)
@@ -106,12 +107,12 @@ export class BookResolver {
     @Ctx() { req }: MyContext
   ): Promise<SubscribeResponse> {
     const {userId} = req.session
-    // 本を借りる人
+
     const subscriber = await User.findOne({ where: {id: userId}})
     const book = await Book.findOne({ where: { id }})
     const publisher = await User.findOne({ where: { id: book?.ownerId } })
 
-    const library = await Library.findOne({ where: { adminId: book?.ownerId }})
+    // const library = await Library.findOne({ where: { adminId: book?.ownerId }})
     // 借りる本が組織からなのか個人からなのか
     // libraryからorganizationを参照するより、userから参照したい
     // publisher.organization
@@ -171,6 +172,39 @@ export class BookResolver {
     }
 
     return {shared}
+  }
+
+  @Mutation(() => Boolean)
+  async returnBook(
+    @Arg('id') id: number,
+    @Ctx() {req}: MyContext
+  ): Promise<boolean> {
+    const {userId} = req.session
+
+    const shared = await SharedBook.findOne({where: { bookId: id, subscriberId: userId }})
+    console.log("shared", shared)
+    if (!shared) {
+      return false
+    }
+
+    await getConnection()
+        .createQueryBuilder()
+        .delete()
+        .from(SharedBook)
+        .where("bookId = :id", {id})
+        .execute()
+
+    await getConnection()
+      .createQueryBuilder()
+      .update(Book)
+      .set({
+        available: "valid"
+      })
+      .where("id = :id", {id})
+      .execute()
+
+    return true
+
   }
 
   // @Mutation(() => Number, {nullable: true})
