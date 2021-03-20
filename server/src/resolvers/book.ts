@@ -5,12 +5,14 @@ import {
   Arg,
   Ctx,
   Field,
+  FieldResolver,
   InputType,
   Int,
   Mutation,
   ObjectType,
   Query,
   Resolver,
+  Root,
   UseMiddleware,
 } from 'type-graphql';
 import { Library } from '../entities/Library';
@@ -18,8 +20,6 @@ import { SharedBook } from '../entities/SharedBook';
 import {getConnection} from "typeorm";
 import { User } from '../entities/User';
 import { sendMessageToChannel } from '../utils/sendMessageToChannel';
-
-type Available = "vaild" | "asking" | "invalid";
 
 @InputType()
 class BookInput {
@@ -57,8 +57,25 @@ class SubscribeResponse {
   shared?: Boolean
 }
 
-@Resolver()
+@Resolver(Book)
 export class BookResolver {
+  @FieldResolver(() => Int, {nullable: true})
+  async subscriberId(
+    @Root() book: Book,
+    @Ctx() {sharedLoader}
+    ): Promise<number> {
+      // const sharedBook = await SharedBook.findOne({where: { bookId: book.id }})
+
+      return sharedLoader.load(book.id)
+      // const subscriber = await User.findOne({ where: { id: sharedBook?.subscriberId } })
+
+      // if (subscriber) {
+      //   return subscriber
+      // }
+
+      // return null;
+  }
+
   @Mutation(() => BookResponse)
   @UseMiddleware(isAuth)
   async publishBook(

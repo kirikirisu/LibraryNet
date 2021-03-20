@@ -1,25 +1,18 @@
 import { Flex, Box, Text, Img, Link, Button } from '@chakra-ui/react';
-import {
-  useBooksQuery,
-  useSubscribeBookMutation,
-} from '../../generated/graphql';
+import { useBooksQuery } from '../../generated/graphql';
 import { useGetId } from '../../utils/useGetId';
 import withApollo from '../../utils/withApollo';
 import MainContainerWidth from '../../components/MainContainerWidth';
 import { omitString } from '../../utils/omitString';
-import { useRouter } from 'next/router';
-
-const h = (n: number): void => {
-  console.log(n);
-};
+import { SubscribeReturnBookButtons } from '../../components/SubscribeReturnBookButtons';
 
 const Shelf: React.FC = () => {
   const intId = useGetId();
-  const router = useRouter();
-
-  const [subscribe] = useSubscribeBookMutation();
 
   const { data, loading, error } = useBooksQuery({
+    // リダイレクト時にserver側では-1になるため結局クライアント側で叩いている
+    // 直接ページに訪れる（リロード）だとうまくサーバー側でurlをゲットしている
+    // TODO: リダイレクト時にserver側でurlをゲットする
     skip: intId === -1,
     variables: { id: intId },
   });
@@ -59,7 +52,7 @@ const Shelf: React.FC = () => {
                 letterSpacing="wide"
                 color="teal.600"
               >
-                {book.available ? 'available' : 'invalid'}
+                {book.available}
               </Text>
               <Link
                 mt={1}
@@ -73,24 +66,7 @@ const Shelf: React.FC = () => {
               <Text mt={2} color="gray.500" fontSize="md">
                 {omitString(book.description)}
               </Text>
-              <Button
-                alignSelf="flex-end"
-                mt="6"
-                mr="4"
-                colorScheme="teal"
-                variant="outline"
-                onClick={async () => {
-                  console.log(book.id);
-                  const res = await subscribe({ variables: { id: book.id } });
-                  if (res.data?.subscribeBook.errors) {
-                    alert(res.data.subscribeBook.errors);
-                  } else {
-                    router.push('/');
-                  }
-                }}
-              >
-                subscribe book
-              </Button>
+              <SubscribeReturnBookButtons bookId={book.id} />
             </Flex>
           </Box>
         ))}

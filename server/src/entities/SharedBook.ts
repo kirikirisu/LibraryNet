@@ -1,6 +1,7 @@
 import { Field, ObjectType } from "type-graphql";
 import {
   BaseEntity,
+  Column,
   Entity,
   ManyToOne,
   PrimaryColumn,
@@ -12,14 +13,14 @@ import { User } from "./User";
 @Entity()
 export class SharedBook extends BaseEntity {
   @Field()
-  @PrimaryColumn()
+  @Column()
   publisherId!: number;
 
   @ManyToOne(() => User, user => user.booksYouPublish, {onDelete: 'CASCADE'})
   publisher!: User
 
   @Field()
-  @PrimaryColumn()
+  @Column()
   subscriberId!: number;
 
   @ManyToOne(() => User, user => user.booksYouSubscribe, {onDelete: 'CASCADE'})
