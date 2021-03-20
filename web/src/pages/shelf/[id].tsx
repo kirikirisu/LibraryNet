@@ -66,7 +66,11 @@ const Shelf: React.FC = () => {
               <Text mt={2} color="gray.500" fontSize="md">
                 {omitString(book.description)}
               </Text>
-              <SubscribeReturnBookButtons bookId={book.id} />
+              <SubscribeReturnBookButtons
+                bookId={book.id}
+                subscriberId={book.subscriberId}
+                available={book.available}
+              />
             </Flex>
           </Box>
         ))}

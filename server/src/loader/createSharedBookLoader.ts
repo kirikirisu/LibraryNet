@@ -1,5 +1,4 @@
 import DataLoader from 'dataloader'
-import { User } from '../entities/User'
 import { SharedBook } from '../entities/SharedBook'
 
  // それぞれのbookIdsにそれぞれのsubscriberaidが対応している必要がある。

@@ -1,18 +1,12 @@
 import { useRouter } from 'next/router';
-import { Button, Box } from '@chakra-ui/react';
+import { Button } from '@chakra-ui/react';
 import { useMeQuery, useSubscribeBookMutation } from '../generated/graphql';
 import { isServer } from '../utils/isServer';
-// import { useApolloClient } from '@apollo/client';
-
-// TODO: type-graphqlでリテラルの指定が分かり次第、availableのtypeをgenする
-const AVAILABLE_TYPE = {
-  valid: 'valid',
-  asking: 'asking',
-  invalid: 'invalid',
-};
 
 interface SubscribeReturnBookButtonsProps {
   bookId: number;
+  subscriberId: number;
+  available: 'valid' | 'asking' | 'invalid';
 }
 
 // 本が借りられない状態ならdisable表示のサブスクボタン => book.availableがinvalid
@@ -22,6 +16,8 @@ interface SubscribeReturnBookButtonsProps {
 // ログインしていない人 => ボタンは押せるがアラートエラー => 通常のボタン表示
 export const SubscribeReturnBookButtons: React.FC<SubscribeReturnBookButtonsProps> = ({
   bookId,
+  subscriberId,
+  available,
 }) => {
   const router = useRouter();
   const [subscribe] = useSubscribeBookMutation();
@@ -40,8 +36,21 @@ export const SubscribeReturnBookButtons: React.FC<SubscribeReturnBookButtonsProp
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error :(</p>;
   if (!data) return <p>can not get data</p>;
+  // console.log('sub me', data.me?.id, subscriberId);
 
-  // if () {}
+  if (data.me?.id === subscriberId) {
+    return (
+      <Button
+        alignSelf="flex-end"
+        mt="6"
+        mr="4"
+        colorScheme="teal"
+        variant="outline"
+      >
+        return book
+      </Button>
+    );
+  }
 
   console.log('me');
 
@@ -52,9 +61,8 @@ export const SubscribeReturnBookButtons: React.FC<SubscribeReturnBookButtonsProp
       mr="4"
       colorScheme="teal"
       variant="outline"
+      disabled={available === 'invalid'}
       onClick={async () => {
-        console.log('bookId', bookId);
-        // ログインしていない場合はのエラーはここで拾う
         try {
           const res = await subscribe({ variables: { id: bookId } });
           if (res.data?.subscribeBook.errors) {

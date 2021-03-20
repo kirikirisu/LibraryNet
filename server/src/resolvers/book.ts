@@ -123,7 +123,9 @@ export class BookResolver {
       return { errors: "can not subscribe own book" }
     }
 
-    if (!book) {}
+    if (!book) {
+      return { errors: "can not find user"}
+    }
     if (!subscriber) {
       return { errors: "can not find user"}
     }

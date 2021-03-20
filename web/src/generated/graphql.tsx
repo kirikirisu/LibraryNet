@@ -66,6 +66,7 @@ export type Book = {
   ownerId: Scalars['Float'];
   createdAt: Scalars['String'];
   updatedAt: Scalars['String'];
+  subscriberId?: Maybe<Scalars['Int']>;
 };
 
 export type Mutation = {
@@ -260,7 +261,7 @@ export type BooksQuery = (
   { __typename?: 'Query' }
   & { books: Array<(
     { __typename?: 'Book' }
-    & Pick<Book, 'id' | 'description' | 'title' | 'img' | 'inforLink' | 'available' | 'ownerId'>
+    & Pick<Book, 'id' | 'description' | 'title' | 'img' | 'inforLink' | 'available' | 'ownerId' | 'subscriberId'>
   )> }
 );
 
@@ -523,6 +524,7 @@ export const BooksDocument = gql`
     inforLink
     available
     ownerId
+    subscriberId
   }
 }
     `;
