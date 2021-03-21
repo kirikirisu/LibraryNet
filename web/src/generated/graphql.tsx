@@ -77,6 +77,7 @@ export type Mutation = {
   createLibrary: LibraryResponse;
   publishBook: BookResponse;
   subscribeBook: SubscribeResponse;
+  returnBook: Scalars['Boolean'];
 };
 
 
@@ -102,6 +103,11 @@ export type MutationPublishBookArgs = {
 
 
 export type MutationSubscribeBookArgs = {
+  id: Scalars['Int'];
+};
+
+
+export type MutationReturnBookArgs = {
   id: Scalars['Int'];
 };
 
@@ -237,6 +243,16 @@ export type RegisterMutation = (
       & Pick<FieldError, 'field' | 'message'>
     )>> }
   ) }
+);
+
+export type ReturnBookMutationVariables = Exact<{
+  id: Scalars['Int'];
+}>;
+
+
+export type ReturnBookMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'returnBook'>
 );
 
 export type SubscribeBookMutationVariables = Exact<{
@@ -480,6 +496,37 @@ export function useRegisterMutation(baseOptions?: Apollo.MutationHookOptions<Reg
 export type RegisterMutationHookResult = ReturnType<typeof useRegisterMutation>;
 export type RegisterMutationResult = Apollo.MutationResult<RegisterMutation>;
 export type RegisterMutationOptions = Apollo.BaseMutationOptions<RegisterMutation, RegisterMutationVariables>;
+export const ReturnBookDocument = gql`
+    mutation ReturnBook($id: Int!) {
+  returnBook(id: $id)
+}
+    `;
+export type ReturnBookMutationFn = Apollo.MutationFunction<ReturnBookMutation, ReturnBookMutationVariables>;
+
+/**
+ * __useReturnBookMutation__
+ *
+ * To run a mutation, you first call `useReturnBookMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useReturnBookMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [returnBookMutation, { data, loading, error }] = useReturnBookMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useReturnBookMutation(baseOptions?: Apollo.MutationHookOptions<ReturnBookMutation, ReturnBookMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<ReturnBookMutation, ReturnBookMutationVariables>(ReturnBookDocument, options);
+      }
+export type ReturnBookMutationHookResult = ReturnType<typeof useReturnBookMutation>;
+export type ReturnBookMutationResult = Apollo.MutationResult<ReturnBookMutation>;
+export type ReturnBookMutationOptions = Apollo.BaseMutationOptions<ReturnBookMutation, ReturnBookMutationVariables>;
 export const SubscribeBookDocument = gql`
     mutation SubscribeBook($id: Int!) {
   subscribeBook(id: $id) {

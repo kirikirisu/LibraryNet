@@ -176,13 +176,13 @@ export class BookResolver {
 
   @Mutation(() => Boolean)
   async returnBook(
-    @Arg('id') id: number,
+    @Arg('id', () => Int) id: number,
     @Ctx() {req}: MyContext
   ): Promise<boolean> {
     const {userId} = req.session
 
     const shared = await SharedBook.findOne({where: { bookId: id, subscriberId: userId }})
-    console.log("shared", shared)
+
     if (!shared) {
       return false
     }

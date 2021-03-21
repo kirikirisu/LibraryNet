@@ -23,9 +23,9 @@ const main = async () => {
   dotenv.config()
   const conn = await createConnection({
     type: 'postgres',
-    database: 'librarynet',
-    username: 'postgres',
-    password: 'postgres',
+    database: process.env.DB_NAME,
+    username: process.env.DB_USER_NAME,
+    password: process.env.DB_PASSWORD,
     logging: true,
     synchronize: true,
     entities: [User, Library, Book, SharedBook],

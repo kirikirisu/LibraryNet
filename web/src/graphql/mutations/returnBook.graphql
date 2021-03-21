@@ -1,0 +1,3 @@
+mutation ReturnBook($id: Int!) {
+  returnBook(id: $id)
+}

@@ -1,6 +1,10 @@
 import { useRouter } from 'next/router';
 import { Button } from '@chakra-ui/react';
-import { useMeQuery, useSubscribeBookMutation } from '../generated/graphql';
+import {
+  useMeQuery,
+  useReturnBookMutation,
+  useSubscribeBookMutation,
+} from '../generated/graphql';
 import { isServer } from '../utils/isServer';
 
 interface SubscribeReturnBookButtonsProps {
@@ -21,6 +25,7 @@ export const SubscribeReturnBookButtons: React.FC<SubscribeReturnBookButtonsProp
 }) => {
   const router = useRouter();
   const [subscribe] = useSubscribeBookMutation();
+  const [returnBook] = useReturnBookMutation();
 
   // キャッシュから取得もできる
   // 初回にこのページにこられてしまうとキャッシュがないためnullになってしまう
@@ -46,6 +51,18 @@ export const SubscribeReturnBookButtons: React.FC<SubscribeReturnBookButtonsProp
         mr="4"
         colorScheme="teal"
         variant="outline"
+        onClick={async () => {
+          try {
+            const res = await returnBook({ variables: { id: bookId } });
+            if (res.data?.returnBook) {
+              router.push('/');
+            } else {
+              alert('faild by any problem');
+            }
+          } catch (err) {
+            alert(err);
+          }
+        }}
       >
         return book
       </Button>
