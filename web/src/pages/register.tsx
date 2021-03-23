@@ -24,7 +24,7 @@ const Register: React.FC = () => {
   return (
     <FormContainer>
       <Formik
-        initialValues={{ username: '', email: '', password: '' }}
+        initialValues={{ username: '', email: '', slackId: '', password: '' }}
         onSubmit={async (values, { setErrors }) => {
           const response = await register({
             variables: { options: { ...values, organization: checked } },
@@ -51,6 +51,13 @@ const Register: React.FC = () => {
               placeholder="password"
               label="Password"
             />
+            <Box mt="5">
+              <InputField
+                name="slackId"
+                placeholder="slackId"
+                label="SlackID"
+              />
+            </Box>
             <Box my="5">
               <Checkbox isChecked={checked} onChange={(e) => toggleCheck(e)}>
                 Organization

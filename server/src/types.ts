@@ -20,6 +20,24 @@ export class FieldError {
 }
 
 @InputType()
+export class RegisterInput {
+  @Field()
+  username: string;
+
+  @Field()
+  slackId: string;
+
+  @Field()
+  email: string;
+
+  @Field()
+  password: string;
+
+  @Field()
+  organization: boolean;
+}
+
+@InputType()
 export class LibraryInput {
   @Field()
   title: string;

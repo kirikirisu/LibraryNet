@@ -9,6 +9,7 @@ import { isServer } from '../utils/isServer';
 
 interface SubscribeReturnBookButtonsProps {
   bookId: number;
+  publisherId: number;
   subscriberId: number;
   available: 'valid' | 'asking' | 'invalid';
 }
@@ -20,6 +21,7 @@ interface SubscribeReturnBookButtonsProps {
 // ログインしていない人 => ボタンは押せるがアラートエラー => 通常のボタン表示
 export const SubscribeReturnBookButtons: React.FC<SubscribeReturnBookButtonsProps> = ({
   bookId,
+  publisherId,
   subscriberId,
   available,
 }) => {
@@ -69,7 +71,10 @@ export const SubscribeReturnBookButtons: React.FC<SubscribeReturnBookButtonsProp
     );
   }
 
-  console.log('me');
+  // console.log('me', data.me?.id, publisherId);
+  if (data.me?.id === publisherId) {
+    return null;
+  }
 
   return (
     <Button

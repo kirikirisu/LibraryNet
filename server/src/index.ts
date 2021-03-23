@@ -31,6 +31,8 @@ const main = async () => {
     synchronize: true,
     entities: [User, Library, Book, SharedBook],
   });
+
+  // await User.delete({});
   // console.log(process.env.DB_NAME)
 
   // conn.createQueryBuilder()

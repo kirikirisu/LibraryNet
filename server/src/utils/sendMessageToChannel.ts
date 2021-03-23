@@ -5,6 +5,7 @@ import { User } from '../entities/User';
 type ExchangeInfo = {
   user: User;
   book: Book;
+  channelId: string;
 };
 
 const omitString = (t: string) => {
@@ -23,6 +24,7 @@ export const sendMessageToChannel = async (exc: ExchangeInfo) => {
 
   const headers = {
     'Content-Type': 'application/json',
+    Authorization: process.env.SLACK_API_KEY,
   };
 
   const block = [
@@ -59,12 +61,13 @@ export const sendMessageToChannel = async (exc: ExchangeInfo) => {
   ];
 
   const data = {
+    channel: exc.channelId,
     blocks: [...block],
   };
 
   const { status } = await axios({
     method: 'post',
-    url: process.env.SLACK_URL,
+    url: 'https://slack.com/api/chat.postMessage',
     data,
     headers,
   });

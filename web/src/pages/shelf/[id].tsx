@@ -68,6 +68,7 @@ const Shelf: React.FC = () => {
               </Text>
               <SubscribeReturnBookButtons
                 bookId={book.id}
+                publisherId={book.ownerId}
                 subscriberId={book.subscriberId}
                 available={book.available}
               />

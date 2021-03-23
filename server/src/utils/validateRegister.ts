@@ -1,4 +1,4 @@
-import { RegisterInput } from '../resolvers/RegisterInput';
+import { RegisterInput } from '../types';
 
 export const validateRejister = (options: RegisterInput) => {
   if (options.username.length <= 2) {
@@ -33,6 +33,15 @@ export const validateRejister = (options: RegisterInput) => {
       {
         field: 'password',
         message: 'length must be greater than 3',
+      },
+    ];
+  }
+
+  if (options.slackId.length <= 0) {
+    return [
+      {
+        field: 'slackId',
+        message: 'please input slackId',
       },
     ];
   }

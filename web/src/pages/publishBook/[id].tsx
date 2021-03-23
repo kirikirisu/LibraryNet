@@ -13,7 +13,7 @@ import { omitString } from '../../utils/omitString';
 const BOOKS_API_BASE_URL = 'https://www.googleapis.com/books/v1/volumes/';
 
 const deleteTags = (t: string) => {
-  const replaced = t.replace(/<("[^"]*"|'[^']*'|[^'">])*>/g, '');
+  const replaced = t?.replace(/<("[^"]*"|'[^']*'|[^'">])*>/g, '');
   return replaced;
 };
 

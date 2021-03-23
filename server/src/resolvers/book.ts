@@ -164,7 +164,12 @@ export class BookResolver {
         bookId: id,
       }).save();
 
-      const status = await sendMessageToChannel({ user: subscriber, book });
+      console.log('channelId', publisher.slackId);
+      const status = await sendMessageToChannel({
+        user: subscriber,
+        book,
+        channelId: publisher.slackId,
+      });
 
       console.log('status', status);
       shared = status === 200;
@@ -230,7 +235,7 @@ export class BookResolver {
   }
 
   @Mutation(() => Boolean, { nullable: true })
-  async postActionButtons() {
+  async sendDirectMessage() {
     const publisherSlackId = 'U01RA2KRKRT'; // b1801815
     const subscriberSlackId = 'U01SGT2FQSD'; // kiri.com1
     // create room & get channelId or get channelId

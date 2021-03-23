@@ -22,6 +22,13 @@ export class User extends BaseEntity {
   @Column({ unique: true })
   username!: string;
 
+  // organizationの場合はchannelId
+  // 個人の場合は個人Id
+  // https://api.slack.com/methods/chat.postMessage#channels
+  @Field()
+  @Column()
+  slackId!: string;
+
   @Field()
   @Column({ unique: true })
   email!: string;

@@ -8,13 +8,12 @@ import {
   ObjectType,
   Query,
   Resolver,
-  Root,
 } from 'type-graphql';
 import argon2 from 'argon2';
 import { getConnection } from 'typeorm';
 import { FieldError, MyContext } from '../types';
 import { validateRejister } from '../utils/validateRegister';
-import { RegisterInput } from './RegisterInput';
+import { RegisterInput } from '../types';
 import { COOKIE_NAME } from '../constants';
 import { Library } from '../entities/Library';
 
@@ -73,6 +72,7 @@ export class UserResolver {
         .into(User)
         .values({
           username: options.username,
+          slackId: options.slackId,
           email: options.email,
           password: hashedPassword,
           organization: options.organization,

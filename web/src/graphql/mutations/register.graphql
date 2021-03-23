@@ -3,6 +3,7 @@ mutation Register($options: RegisterInput!) {
     user {
       id
       username
+      slackId
     }
     errors {
       field

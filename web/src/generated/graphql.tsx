@@ -36,6 +36,7 @@ export type User = {
   __typename?: 'User';
   id: Scalars['Float'];
   username: Scalars['String'];
+  slackId: Scalars['String'];
   email: Scalars['String'];
   password: Scalars['String'];
   organization: Scalars['Boolean'];
@@ -78,6 +79,7 @@ export type Mutation = {
   publishBook: BookResponse;
   subscribeBook: SubscribeResponse;
   returnBook: Scalars['Boolean'];
+  postActionButtons?: Maybe<Scalars['Boolean']>;
 };
 
 
@@ -124,8 +126,9 @@ export type FieldError = {
 };
 
 export type RegisterInput = {
-  email: Scalars['String'];
   username: Scalars['String'];
+  slackId: Scalars['String'];
+  email: Scalars['String'];
   password: Scalars['String'];
   organization: Scalars['Boolean'];
 };
@@ -237,7 +240,7 @@ export type RegisterMutation = (
     { __typename?: 'UserResponse' }
     & { user?: Maybe<(
       { __typename?: 'User' }
-      & Pick<User, 'id' | 'username'>
+      & Pick<User, 'id' | 'username' | 'slackId'>
     )>, errors?: Maybe<Array<(
       { __typename?: 'FieldError' }
       & Pick<FieldError, 'field' | 'message'>
@@ -462,6 +465,7 @@ export const RegisterDocument = gql`
     user {
       id
       username
+      slackId
     }
     errors {
       field
