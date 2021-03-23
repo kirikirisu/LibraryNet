@@ -21,6 +21,7 @@ import {getConnection} from "typeorm";
 import { User } from '../entities/User';
 import { sendMessageToChannel } from '../utils/sendMessageToChannel';
 import axios from 'axios'
+import { getChannelID } from '../utils/getChannelID';
 
 @InputType()
 class BookInput {
@@ -228,7 +229,11 @@ export class BookResolver {
   }
 
   @Mutation(() => Boolean, { nullable: true })
-  async postIMessage() {
+  async postActionButtons() {
+
+    const publisherSlackId = "U01RA2KRKRT"; // b1801815
+    const subscriberSlackId = "U01SGT2FQSD" // kiri.com1
+    const channelId = await getChannelID(publisherSlackId, subscriberSlackId)
 
     const headers = {
       'Content-Type': 'application/json',
@@ -283,9 +288,8 @@ export class BookResolver {
       }
     ]
 
-    const publisherSlackId = "U01RA2KRKRT";
     const data = {
-      "channel": publisherSlackId,
+      "channel": channelId,
       "blocks": [...block]
     }
 
