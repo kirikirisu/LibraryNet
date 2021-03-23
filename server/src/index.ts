@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import dotenv from 'dotenv'
+import dotenv from 'dotenv';
 import { createConnection } from 'typeorm';
 import express from 'express';
 import { buildSchema } from 'type-graphql';
@@ -16,12 +16,12 @@ import { Library } from './entities/Library';
 import { LibraryResolver } from './resolvers/library';
 import { BookResolver } from './resolvers/book';
 import { Book } from './entities/Book';
-import {SharedBook} from './entities/SharedBook'
-import { createSharedBookLoader } from './loader/createSharedBookLoader'
+import { SharedBook } from './entities/SharedBook';
+import { createSharedBookLoader } from './loader/createSharedBookLoader';
 import { slack } from './handler/slack';
 
 const main = async () => {
-  dotenv.config()
+  dotenv.config();
   const conn = await createConnection({
     type: 'postgres',
     database: process.env.DB_NAME,
@@ -53,7 +53,7 @@ const main = async () => {
   const RedisStore = connectRedis(session);
   const redis = new Redis();
 
-  app.use(express.json())
+  app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 
   app.use(
@@ -93,14 +93,14 @@ const main = async () => {
 
   apolloServer.applyMiddleware({ app, cors: false });
 
-  app.get("/", (_, res) => {
-    res.send("OK. server working!!")
-  })
+  app.get('/', (_, res) => {
+    res.send('OK. server working!!');
+  });
 
-  app.post("/", async(req, res) => {
-    const status = await slack(req, res)
-    console.log("slackHandlerStatus", status)
-  })
+  app.post('/', async (req, res) => {
+    const status = await slack(req, res);
+    console.log('slackHandlerStatus', status);
+  });
 
   app.listen(4000, () => {
     console.log('server start on port 4000');

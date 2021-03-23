@@ -17,10 +17,10 @@ import {
 } from 'type-graphql';
 import { Library } from '../entities/Library';
 import { SharedBook } from '../entities/SharedBook';
-import {getConnection} from "typeorm";
+import { getConnection } from 'typeorm';
 import { User } from '../entities/User';
 import { sendMessageToChannel } from '../utils/sendMessageToChannel';
-import axios from 'axios'
+import axios from 'axios';
 import { getChannelID } from '../utils/getChannelID';
 
 @InputType()
@@ -38,13 +38,13 @@ class BookInput {
   inforLink: string;
 
   @Field()
-  available: "valid" | "asking" | "invalid";
+  available: 'valid' | 'asking' | 'invalid';
 }
 
 @ObjectType()
 class BookResponse {
   @Field(() => String, { nullable: true })
-  errors?: String;
+  errors?: string;
 
   @Field(() => Book, { nullable: true })
   book?: Book;
@@ -53,31 +53,30 @@ class BookResponse {
 @ObjectType()
 class SubscribeResponse {
   @Field(() => String, { nullable: true })
-  errors?: String;
+  errors?: string;
 
   @Field(() => Boolean, { nullable: true })
-  shared?: Boolean
+  shared?: boolean;
 }
 
 @Resolver(Book)
 export class BookResolver {
-  @FieldResolver(() => Int, {nullable: true})
+  @FieldResolver(() => Int, { nullable: true })
   async subscriberId(
     @Root() book: Book,
-    @Ctx() {sharedLoader}: MyContext
-    ): Promise<number> {
-      // const sharedBook = await SharedBook.findOne({where: { bookId: book.id }})
+    @Ctx() { sharedLoader }: MyContext
+  ): Promise<number> {
+    // const sharedBook = await SharedBook.findOne({where: { bookId: book.id }})
 
-      return sharedLoader.load(book.id)
-      // const subscriber = await User.findOne({ where: { id: sharedBook?.subscriberId } })
+    return sharedLoader.load(book.id);
+    // const subscriber = await User.findOne({ where: { id: sharedBook?.subscriberId } })
 
-      // if (subscriber) {
-      //   return subscriber
-      // }
+    // if (subscriber) {
+    //   return subscriber
+    // }
 
-      // return null;
+    // return null;
   }
-
 
   @Mutation(() => BookResponse)
   @UseMiddleware(isAuth)
@@ -108,11 +107,11 @@ export class BookResolver {
     @Arg('id', () => Int) id: number,
     @Ctx() { req }: MyContext
   ): Promise<SubscribeResponse> {
-    const {userId} = req.session
+    const { userId } = req.session;
 
-    const subscriber = await User.findOne({ where: {id: userId}})
-    const book = await Book.findOne({ where: { id }})
-    const publisher = await User.findOne({ where: { id: book?.ownerId } })
+    const subscriber = await User.findOne({ where: { id: userId } });
+    const book = await Book.findOne({ where: { id } });
+    const publisher = await User.findOne({ where: { id: book?.ownerId } });
 
     // const library = await Library.findOne({ where: { adminId: book?.ownerId }})
     // 借りる本が組織からなのか個人からなのか
@@ -123,90 +122,92 @@ export class BookResolver {
     // TODO:userからorganizationフラグを参照したい
 
     if (userId === book?.ownerId) {
-      return { errors: "can not subscribe own book" }
+      return { errors: 'can not subscribe own book' };
     }
 
     if (!book) {
-      return { errors: "can not find user"}
+      return { errors: 'can not find user' };
     }
     if (!subscriber) {
-      return { errors: "can not find user"}
+      return { errors: 'can not find user' };
     }
 
-    if (book?.available === "invalid") {
-      return { errors: "already subscribed other" }
+    if (book?.available === 'invalid') {
+      return { errors: 'already subscribed other' };
     }
 
     // 組織が本を借りることはない
     if (subscriber.organization) {
-      return { errors: "organization can not subscribe" }
+      return { errors: 'organization can not subscribe' };
     }
 
-    console.log("-------------------------done subscription---------------------------")
-    let shared
+    console.log(
+      '-------------------------done subscription---------------------------'
+    );
+    let shared;
     // 組織から本を借りる場合
     if (publisher?.organization) {
       // change book state
       await getConnection()
-          .createQueryBuilder()
-          .update(Book)
-          .set({
-            available: "invalid"
-          })
-          .where("id = :id", {id: id})
-          .execute()
+        .createQueryBuilder()
+        .update(Book)
+        .set({
+          available: 'invalid',
+        })
+        .where('id = :id', { id: id })
+        .execute();
 
       // insert & select
       await SharedBook.create({
         publisherId: book?.ownerId,
         subscriberId: userId,
         bookId: id,
-      }).save()
+      }).save();
 
-      const status = await sendMessageToChannel({ user: subscriber, book})
+      const status = await sendMessageToChannel({ user: subscriber, book });
 
-      console.log("status", status)
-      shared = status === 200
+      console.log('status', status);
+      shared = status === 200;
 
-    // 個人から本を借りる場合
+      // 個人から本を借りる場合
     } else {
-
     }
 
-    return {shared}
+    return { shared };
   }
 
   @Mutation(() => Boolean)
   async returnBook(
     @Arg('id', () => Int) id: number,
-    @Ctx() {req}: MyContext
+    @Ctx() { req }: MyContext
   ): Promise<boolean> {
-    const {userId} = req.session
+    const { userId } = req.session;
 
-    const shared = await SharedBook.findOne({where: { bookId: id, subscriberId: userId }})
+    const shared = await SharedBook.findOne({
+      where: { bookId: id, subscriberId: userId },
+    });
 
     if (!shared) {
-      return false
+      return false;
     }
 
     await getConnection()
-        .createQueryBuilder()
-        .delete()
-        .from(SharedBook)
-        .where("bookId = :id", {id})
-        .execute()
+      .createQueryBuilder()
+      .delete()
+      .from(SharedBook)
+      .where('bookId = :id', { id })
+      .execute();
 
     await getConnection()
       .createQueryBuilder()
       .update(Book)
       .set({
-        available: "valid"
+        available: 'valid',
       })
-      .where("id = :id", {id})
-      .execute()
+      .where('id = :id', { id })
+      .execute();
 
-    return true
-
+    return true;
   }
 
   // @Mutation(() => Number, {nullable: true})
@@ -222,7 +223,7 @@ export class BookResolver {
     return books;
   }
 
-  @Query(() => Book, {nullable: true})
+  @Query(() => Book, { nullable: true })
   async book(@Arg('id', () => Int) id: number) {
     const book = await Book.findOne({ where: { id: id } });
     return book;
@@ -230,81 +231,80 @@ export class BookResolver {
 
   @Mutation(() => Boolean, { nullable: true })
   async postActionButtons() {
-
-    const publisherSlackId = "U01RA2KRKRT"; // b1801815
-    const subscriberSlackId = "U01SGT2FQSD" // kiri.com1
-    const channelId = await getChannelID(publisherSlackId, subscriberSlackId)
+    const publisherSlackId = 'U01RA2KRKRT'; // b1801815
+    const subscriberSlackId = 'U01SGT2FQSD'; // kiri.com1
+    // create room & get channelId or get channelId
+    const channelId = await getChannelID(publisherSlackId, subscriberSlackId);
 
     const headers = {
       'Content-Type': 'application/json',
-      'Authorization': process.env.SLACK_API_KEY
-    }
+      Authorization: process.env.SLACK_API_KEY,
+    };
 
     const block = [
       {
-        "type": "header",
-        "text": {
-          "type": "plain_text",
-          "text": "bobが下記の本を借りたいようです",
-          "emoji": true
-        }
+        type: 'header',
+        text: {
+          type: 'plain_text',
+          text: 'bobが下記の本を借りたいようです',
+          emoji: true,
+        },
       },
       {
-        "type": "section",
-          "text": {
-            "type": "mrkdwn",
-            "text": "<http://hoge.com|Book Info> \n this is description"
-          },
-        "accessory": {
-          "type": "image",
-          "image_url": "https://is5-ssl.mzstatic.com/image/thumb/Purple3/v4/d3/72/5c/d3725c8f-c642-5d69-1904-aa36e4297885/source/256x256bb.jpg",
-          "alt_text": "book icon"
-        }
+        type: 'section',
+        text: {
+          type: 'mrkdwn',
+          text: '<http://hoge.com|Book Info> \n this is description',
+        },
+        accessory: {
+          type: 'image',
+          image_url:
+            'https://is5-ssl.mzstatic.com/image/thumb/Purple3/v4/d3/72/5c/d3725c8f-c642-5d69-1904-aa36e4297885/source/256x256bb.jpg',
+          alt_text: 'book icon',
+        },
       },
       {
-        "type": "actions",
-        "elements": [
+        type: 'actions',
+        elements: [
           {
-            "type": "button",
-            "text": {
-              "type": "plain_text",
-              "emoji": true,
-              "text": "OK!!"
+            type: 'button',
+            text: {
+              type: 'plain_text',
+              emoji: true,
+              text: 'OK!!',
             },
-            "style": "primary",
-            "value": "valid"
+            style: 'primary',
+            value: 'valid',
           },
           {
-            "type": "button",
-            "text": {
-              "type": "plain_text",
-              "emoji": true,
-              "text": "NO..."
+            type: 'button',
+            text: {
+              type: 'plain_text',
+              emoji: true,
+              text: 'NO...',
             },
-            "style": "danger",
-            "value": "invalid"
-          }
-        ]
-      }
-    ]
+            style: 'danger',
+            value: 'invalid',
+          },
+        ],
+      },
+    ];
 
     const data = {
-      "channel": channelId,
-      "blocks": [...block]
-    }
+      channel: channelId,
+      blocks: [...block],
+    };
 
     const { status } = await axios({
       method: 'post',
-      url:'https://slack.com/api/chat.postMessage',
+      url: 'https://slack.com/api/chat.postMessage',
       data,
-      headers
-   })
-   console.log("status",status)
-   if (status === 200) {
-     return true
-   }
-   return false
-
+      headers,
+    });
+    console.log('status', status);
+    if (status === 200) {
+      return true;
+    }
+    return false;
   }
-
 }
