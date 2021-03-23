@@ -20,6 +20,7 @@ import { SharedBook } from '../entities/SharedBook';
 import {getConnection} from "typeorm";
 import { User } from '../entities/User';
 import { sendMessageToChannel } from '../utils/sendMessageToChannel';
+import axios from 'axios'
 
 @InputType()
 class BookInput {
@@ -225,4 +226,81 @@ export class BookResolver {
     const book = await Book.findOne({ where: { id: id } });
     return book;
   }
+
+  @Mutation(() => Boolean, { nullable: true })
+  async postIMessage() {
+
+    const headers = {
+      'Content-Type': 'application/json',
+      'Authorization': process.env.SLACK_API_KEY
+    }
+
+    const block = [
+      {
+        "type": "header",
+        "text": {
+          "type": "plain_text",
+          "text": "bobが下記の本を借りたいようです",
+          "emoji": true
+        }
+      },
+      {
+        "type": "section",
+          "text": {
+            "type": "mrkdwn",
+            "text": "<http://hoge.com|Book Info> \n this is description"
+          },
+        "accessory": {
+          "type": "image",
+          "image_url": "https://is5-ssl.mzstatic.com/image/thumb/Purple3/v4/d3/72/5c/d3725c8f-c642-5d69-1904-aa36e4297885/source/256x256bb.jpg",
+          "alt_text": "book icon"
+        }
+      },
+      {
+        "type": "actions",
+        "elements": [
+          {
+            "type": "button",
+            "text": {
+              "type": "plain_text",
+              "emoji": true,
+              "text": "OK!!"
+            },
+            "style": "primary",
+            "value": "valid"
+          },
+          {
+            "type": "button",
+            "text": {
+              "type": "plain_text",
+              "emoji": true,
+              "text": "NO..."
+            },
+            "style": "danger",
+            "value": "invalid"
+          }
+        ]
+      }
+    ]
+
+    const publisherSlackId = "U01RA2KRKRT";
+    const data = {
+      "channel": publisherSlackId,
+      "blocks": [...block]
+    }
+
+    const { status } = await axios({
+      method: 'post',
+      url:'https://slack.com/api/chat.postMessage',
+      data,
+      headers
+   })
+   console.log("status",status)
+   if (status === 200) {
+     return true
+   }
+   return false
+
+  }
+
 }

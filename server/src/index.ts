@@ -18,6 +18,7 @@ import { BookResolver } from './resolvers/book';
 import { Book } from './entities/Book';
 import {SharedBook} from './entities/SharedBook'
 import { createSharedBookLoader } from './loader/createSharedBookLoader'
+import { slack } from './handler/slack';
 
 const main = async () => {
   dotenv.config()
@@ -51,6 +52,9 @@ const main = async () => {
   const app = express();
   const RedisStore = connectRedis(session);
   const redis = new Redis();
+
+  app.use(express.json())
+  app.use(express.urlencoded({ extended: true }));
 
   app.use(
     cors({
@@ -88,6 +92,15 @@ const main = async () => {
   });
 
   apolloServer.applyMiddleware({ app, cors: false });
+
+  app.get("/", (_, res) => {
+    res.send("OK. server working!!")
+  })
+
+  app.post("/", async(req, res) => {
+    const status = await slack(req, res)
+    console.log("slackHandlerStatus", status)
+  })
 
   app.listen(4000, () => {
     console.log('server start on port 4000');
