@@ -25,7 +25,6 @@ class LibraryResponse {
 
 @Resolver(Library)
 export class LibraryResolver {
-
   @Mutation(() => LibraryResponse)
   @UseMiddleware(isAuth)
   async createLibrary(

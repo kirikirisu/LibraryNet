@@ -35,7 +35,7 @@ export class Library extends BaseEntity {
   @PrimaryColumn()
   adminId: number;
 
-  @OneToOne(() => User, {onDelete: "CASCADE"})
+  @OneToOne(() => User, { onDelete: 'CASCADE' })
   @JoinColumn()
   admin: User;
 

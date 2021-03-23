@@ -29,10 +29,8 @@ class UserResponse {
 
 @Resolver(User)
 export class UserResolver {
-  @FieldResolver(() => Boolean, {nullable: true})
-  async hasLibrary(
-    @Ctx() { req }: MyContext
-    ): Promise<boolean | null> {
+  @FieldResolver(() => Boolean, { nullable: true })
+  async hasLibrary(@Ctx() { req }: MyContext): Promise<boolean | null> {
     const { userId } = req.session;
     if (!userId) {
       return null;
@@ -77,7 +75,7 @@ export class UserResolver {
           username: options.username,
           email: options.email,
           password: hashedPassword,
-          organization: options.organization
+          organization: options.organization,
         })
         .returning('*')
         .execute();

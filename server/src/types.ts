@@ -8,7 +8,7 @@ export type MyContext = {
     session: Session & Partial<SessionData> & { userId?: number };
   };
   res: Response;
-  sharedLoader: ReturnType<typeof createSharedBookLoader>
+  sharedLoader: ReturnType<typeof createSharedBookLoader>;
 };
 
 @ObjectType()

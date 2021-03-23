@@ -1,4 +1,4 @@
-import { Field, ObjectType } from "type-graphql";
+import { Field, ObjectType } from 'type-graphql';
 import {
   BaseEntity,
   Column,
@@ -7,9 +7,9 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
-} from "typeorm";
-import { Book } from "./Book";
-import { SharedBook } from "./SharedBook";
+} from 'typeorm';
+import { Book } from './Book';
+import { SharedBook } from './SharedBook';
 
 @ObjectType()
 @Entity()
@@ -37,11 +37,11 @@ export class User extends BaseEntity {
   @OneToMany(() => Book, (book) => book.owner)
   books: Book[];
 
-  @OneToMany(() => SharedBook, sharedBook => sharedBook.publisher)
+  @OneToMany(() => SharedBook, (sharedBook) => sharedBook.publisher)
   booksYouPublish: Book[];
 
-  @OneToMany(() => SharedBook, sharedBook => sharedBook.subscriber)
-  booksYouSubscribe: Book[]
+  @OneToMany(() => SharedBook, (sharedBook) => sharedBook.subscriber)
+  booksYouSubscribe: Book[];
 
   @Field(() => String)
   @CreateDateColumn()
