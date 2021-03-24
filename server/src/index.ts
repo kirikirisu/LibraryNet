@@ -42,14 +42,15 @@ const main = async () => {
   //     .where("bookId = :id", {id: 15})
   //     .execute()
 
-  // conn.createQueryBuilder()
+  // await conn
+  //   .createQueryBuilder()
   //   .createQueryBuilder()
   //   .update(Book)
   //   .set({
-  //     available: "valid"
+  //     available: 'valid',
   //   })
-  //   .where("id = :id", {id: 17})
-  //   .execute()
+  //   .where('id = :id', { id: 21 })
+  //   .execute();
 
   const app = express();
   const RedisStore = connectRedis(session);

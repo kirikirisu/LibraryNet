@@ -138,6 +138,10 @@ export class BookResolver {
       return { errors: 'already subscribed other' };
     }
 
+    if (book?.available === 'asking') {
+      return { errors: 'this book asking' };
+    }
+
     // 組織が本を借りることはない
     if (subscriber.organization) {
       return { errors: 'organization can not subscribe' };
