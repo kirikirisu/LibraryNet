@@ -20,8 +20,7 @@ import { SharedBook } from '../entities/SharedBook';
 import { getConnection } from 'typeorm';
 import { User } from '../entities/User';
 import { sendMessageToChannel } from '../utils/sendMessageToChannel';
-import axios from 'axios';
-import { getChannelID } from '../utils/getChannelID';
+import { sendDirectMessage } from '../utils/sendDirectMessage';
 
 @InputType()
 class BookInput {
@@ -129,7 +128,10 @@ export class BookResolver {
       return { errors: 'can not find user' };
     }
     if (!subscriber) {
-      return { errors: 'can not find user' };
+      return { errors: 'can not find subscriber' };
+    }
+    if (!publisher) {
+      return { errors: 'can not find publisher' };
     }
 
     if (book?.available === 'invalid') {
@@ -146,7 +148,7 @@ export class BookResolver {
     );
     let shared;
     // 組織から本を借りる場合
-    if (publisher?.organization) {
+    if (publisher.organization) {
       // change book state
       await getConnection()
         .createQueryBuilder()
@@ -164,7 +166,7 @@ export class BookResolver {
         bookId: id,
       }).save();
 
-      console.log('channelId', publisher.slackId);
+      // console.log('channelId', publisher.slackId);
       const status = await sendMessageToChannel({
         user: subscriber,
         book,
@@ -176,6 +178,18 @@ export class BookResolver {
 
       // 個人から本を借りる場合
     } else {
+      // change book state
+      await getConnection()
+        .createQueryBuilder()
+        .update(Book)
+        .set({
+          available: 'asking',
+        })
+        .where('id = :id', { id: id })
+        .execute();
+
+      const status = await sendDirectMessage(publisher, subscriber, book);
+      console.log('Did send DM?', status);
     }
 
     return { shared };
@@ -234,82 +248,82 @@ export class BookResolver {
     return book;
   }
 
-  @Mutation(() => Boolean, { nullable: true })
-  async sendDirectMessage() {
-    const publisherSlackId = 'U01RA2KRKRT'; // b1801815
-    const subscriberSlackId = 'U01SGT2FQSD'; // kiri.com1
-    // create room & get channelId or get channelId
-    const channelId = await getChannelID(publisherSlackId, subscriberSlackId);
+  // @Mutation(() => Boolean, { nullable: true })
+  // async sendDirectMessage() {
+  //   const publisherSlackId = 'U01RA2KRKRT'; // b1801815
+  //   const subscriberSlackId = 'U01SGT2FQSD'; // kiri.com1
+  //   // create room & get channelId or get channelId
+  //   const channelId = await getChannelID(publisherSlackId, subscriberSlackId);
 
-    const headers = {
-      'Content-Type': 'application/json',
-      Authorization: process.env.SLACK_API_KEY,
-    };
+  //   const headers = {
+  //     'Content-Type': 'application/json',
+  //     Authorization: process.env.SLACK_API_KEY,
+  //   };
 
-    const block = [
-      {
-        type: 'header',
-        text: {
-          type: 'plain_text',
-          text: 'bobが下記の本を借りたいようです',
-          emoji: true,
-        },
-      },
-      {
-        type: 'section',
-        text: {
-          type: 'mrkdwn',
-          text: '<http://hoge.com|Book Info> \n this is description',
-        },
-        accessory: {
-          type: 'image',
-          image_url:
-            'https://is5-ssl.mzstatic.com/image/thumb/Purple3/v4/d3/72/5c/d3725c8f-c642-5d69-1904-aa36e4297885/source/256x256bb.jpg',
-          alt_text: 'book icon',
-        },
-      },
-      {
-        type: 'actions',
-        elements: [
-          {
-            type: 'button',
-            text: {
-              type: 'plain_text',
-              emoji: true,
-              text: 'OK!!',
-            },
-            style: 'primary',
-            value: 'valid',
-          },
-          {
-            type: 'button',
-            text: {
-              type: 'plain_text',
-              emoji: true,
-              text: 'NO...',
-            },
-            style: 'danger',
-            value: 'invalid',
-          },
-        ],
-      },
-    ];
+  //   const block = [
+  //     {
+  //       type: 'header',
+  //       text: {
+  //         type: 'plain_text',
+  //         text: 'bobが下記の本を借りたいようです',
+  //         emoji: true,
+  //       },
+  //     },
+  //     {
+  //       type: 'section',
+  //       text: {
+  //         type: 'mrkdwn',
+  //         text: '<http://hoge.com|Book Info> \n this is description',
+  //       },
+  //       accessory: {
+  //         type: 'image',
+  //         image_url:
+  //           'https://is5-ssl.mzstatic.com/image/thumb/Purple3/v4/d3/72/5c/d3725c8f-c642-5d69-1904-aa36e4297885/source/256x256bb.jpg',
+  //         alt_text: 'book icon',
+  //       },
+  //     },
+  //     {
+  //       type: 'actions',
+  //       elements: [
+  //         {
+  //           type: 'button',
+  //           text: {
+  //             type: 'plain_text',
+  //             emoji: true,
+  //             text: 'OK!!',
+  //           },
+  //           style: 'primary',
+  //           value: 'valid',
+  //         },
+  //         {
+  //           type: 'button',
+  //           text: {
+  //             type: 'plain_text',
+  //             emoji: true,
+  //             text: 'NO...',
+  //           },
+  //           style: 'danger',
+  //           value: 'invalid',
+  //         },
+  //       ],
+  //     },
+  //   ];
 
-    const data = {
-      channel: channelId,
-      blocks: [...block],
-    };
+  //   const data = {
+  //     channel: channelId,
+  //     blocks: [...block],
+  //   };
 
-    const { status } = await axios({
-      method: 'post',
-      url: 'https://slack.com/api/chat.postMessage',
-      data,
-      headers,
-    });
-    console.log('status', status);
-    if (status === 200) {
-      return true;
-    }
-    return false;
-  }
+  //   const { status } = await axios({
+  //     method: 'post',
+  //     url: 'https://slack.com/api/chat.postMessage',
+  //     data,
+  //     headers,
+  //   });
+  //   console.log('status', status);
+  //   if (status === 200) {
+  //     return true;
+  //   }
+  //   return false;
+  // }
 }

@@ -1,4 +1,4 @@
-import { Flex, Box, Text, Img, Link, Button } from '@chakra-ui/react';
+import { Flex, Box, Text, Img, Link } from '@chakra-ui/react';
 import { useBooksQuery } from '../../generated/graphql';
 import { useGetId } from '../../utils/useGetId';
 import withApollo from '../../utils/withApollo';

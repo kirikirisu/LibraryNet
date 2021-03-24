@@ -76,6 +76,10 @@ export const SubscribeReturnBookButtons: React.FC<SubscribeReturnBookButtonsProp
     return null;
   }
 
+  if (data.me === null) {
+    return null;
+  }
+
   return (
     <Button
       alignSelf="flex-end"
