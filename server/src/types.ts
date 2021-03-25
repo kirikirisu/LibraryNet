@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { Session, SessionData } from 'express-session';
 import { Field, InputType, ObjectType } from 'type-graphql';
 import { createSharedBookLoader } from './loader/createSharedBookLoader';
+import { createAdminLoader } from './loader/createAdminLoader';
 
 export type MyContext = {
   req: Request & {
@@ -9,6 +10,7 @@ export type MyContext = {
   };
   res: Response;
   sharedLoader: ReturnType<typeof createSharedBookLoader>;
+  adminLoader: ReturnType<typeof createAdminLoader>;
 };
 
 @ObjectType()

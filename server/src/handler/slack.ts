@@ -1,7 +1,7 @@
 // this handler need https
 // slackのメッセージで送ったボタンを押した時の処理
 import axios from 'axios';
-import { Request, Response } from 'express';
+import { Request } from 'express';
 import { SharedBook } from '../entities/SharedBook';
 import { getConnection } from 'typeorm';
 import { Book } from '../entities/Book';
@@ -17,7 +17,7 @@ type RequestValue = {
   ok: boolean;
 };
 
-export const slack = async (req: Request, res: Response) => {
+export const slack = async (req: Request) => {
   console.log('------------------slack https reqest----------------');
   const payload = req.body.payload;
   if (!payload) return 'can not reseive slack action payload';

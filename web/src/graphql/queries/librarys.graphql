@@ -5,5 +5,10 @@ query Librarys {
     description
     icon
     adminId
+    admin{
+      id
+      username
+      organization
+    }
   }
 }

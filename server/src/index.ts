@@ -18,6 +18,7 @@ import { BookResolver } from './resolvers/book';
 import { Book } from './entities/Book';
 import { SharedBook } from './entities/SharedBook';
 import { createSharedBookLoader } from './loader/createSharedBookLoader';
+import { createAdminLoader } from './loader/createAdminLoader';
 import { slack } from './handler/slack';
 
 const main = async () => {
@@ -91,6 +92,7 @@ const main = async () => {
       req,
       res,
       sharedLoader: createSharedBookLoader(),
+      adminLoader: createAdminLoader(),
     }),
   });
 
@@ -100,8 +102,8 @@ const main = async () => {
     res.send('OK. server working!!');
   });
 
-  app.post('/', async (req, res) => {
-    const status = await slack(req, res);
+  app.post('/', async (req) => {
+    const status = await slack(req);
     console.log('slackHandlerStatus', status);
   });
 
