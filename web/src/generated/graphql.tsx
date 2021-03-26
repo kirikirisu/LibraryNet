@@ -18,7 +18,7 @@ export type Query = {
   __typename?: 'Query';
   me?: Maybe<User>;
   librarys?: Maybe<Array<Library>>;
-  books: Array<Book>;
+  books?: Maybe<Array<Book>>;
   book?: Maybe<Book>;
 };
 
@@ -278,10 +278,10 @@ export type BooksQueryVariables = Exact<{
 
 export type BooksQuery = (
   { __typename?: 'Query' }
-  & { books: Array<(
+  & { books?: Maybe<Array<(
     { __typename?: 'Book' }
-    & Pick<Book, 'id' | 'description' | 'title' | 'img' | 'inforLink' | 'available' | 'ownerId' | 'subscriberId'>
-  )> }
+    & Pick<Book, 'id' | 'description' | 'title' | 'img' | 'inforLink' | 'available' | 'ownerId'>
+  )>> }
 );
 
 export type LibrarysQueryVariables = Exact<{ [key: string]: never; }>;
@@ -579,7 +579,6 @@ export const BooksDocument = gql`
     inforLink
     available
     ownerId
-    subscriberId
   }
 }
     `;

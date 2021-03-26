@@ -1,4 +1,4 @@
-import { Flex, Box, Text, Img, Link } from '@chakra-ui/react';
+import { Heading, Flex, Box, Text, Img, Link } from '@chakra-ui/react';
 import { useBooksQuery } from '../../generated/graphql';
 import { useGetId } from '../../utils/useGetId';
 import withApollo from '../../utils/withApollo';
@@ -54,22 +54,15 @@ const Shelf: React.FC = () => {
               >
                 {book.available}
               </Text>
-              <Link
-                mt={1}
-                display="block"
-                fontSize="xl"
-                lineHeight="normal"
-                fontWeight="semibold"
-              >
-                {book.title}
-              </Link>
+              <Heading size="md">
+                <Link>{book.title}</Link>
+              </Heading>
               <Text mt={2} color="gray.500" fontSize="md">
                 {omitString(book.description)}
               </Text>
               <SubscribeReturnBookButtons
                 bookId={book.id}
                 publisherId={book.ownerId}
-                subscriberId={book.subscriberId}
                 available={book.available}
               />
             </Flex>

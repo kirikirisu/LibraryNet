@@ -240,9 +240,21 @@ export class BookResolver {
   //  return status
   // }
 
-  @Query(() => [Book])
-  async books(@Arg('id', () => Int) id: number) {
-    const books = await Book.find({ where: { ownerId: id } });
+  // クエリビルダーでselectを行うと返り値がエイリアスによりBook型でなくってしまう
+  @Query(() => [Book], { nullable: true })
+  async books(@Arg('id', () => Int) id: number): Promise<Book[]> {
+    // const books = await Book.find({ where: { ownerId: id } });
+    // return books;
+
+    const books = await getConnection().query(
+      `
+       select *
+       from book
+       where book."ownerId" = ${id}
+       and book.available = 'valid'
+      `
+    );
+
     return books;
   }
 
