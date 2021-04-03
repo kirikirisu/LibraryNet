@@ -10,11 +10,6 @@ interface SubscribeReturnBookButtonsProps {
   available: 'valid' | 'asking' | 'invalid';
 }
 
-// 本が借りられない状態ならdisable表示のサブスクボタン => book.availableがinvalid
-// しかし自分がこの本を借りている人なら => 返すボタンを押せる => sharedBook.subscriberIdとdata.me.idで判断
-
-// 本が借りられる状態ならサブスクボタン => book.availableがvalid
-// ログインしていない人 => ボタンは押せるがアラートエラー => 通常のボタン表示
 export const SubscribeReturnBookButtons: React.FC<SubscribeReturnBookButtonsProps> = ({
   bookId,
   publisherId,

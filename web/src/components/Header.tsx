@@ -10,6 +10,7 @@ import {
   MenuButton,
   MenuList,
   MenuItem,
+  Icon,
 } from '@chakra-ui/react';
 import {
   HamburgerIcon,
@@ -25,11 +26,14 @@ import {
 } from '../generated/graphql';
 import NextLink from 'next/link';
 import { isServer } from '../utils/isServer';
+import { AiOutlineUser } from 'react-icons/ai';
+import { useRouter } from 'next/router';
 
 export const Header: React.FC = () => {
   const { data, loading } = useMeQuery({ skip: isServer() });
   const [logout, { loading: logoutLoading }] = useLogoutMutation();
 
+  const router = useRouter();
   // const apolloClient = useApolloClient();
   // const { me } = apolloClient.readQuery({
   //   query: MeDocument,
@@ -81,9 +85,19 @@ export const Header: React.FC = () => {
       <>
         <Box display={{ base: 'none', lg: 'block' }}>
           <Flex justify="center" align="center">
-            <Text fontSize="xl" mr="4">
+            <Text fontSize="xl" mr="2">
               {data.me.username}
             </Text>
+            <IconButton
+              mr="4"
+              colorScheme="teal"
+              aria-label="user icon"
+              fontSize="21px"
+              icon={<AiOutlineUser />}
+              onClick={() => {
+                router.push('/userProfile');
+              }}
+            />
             <Button
               variant="outline"
               colorScheme="teal"

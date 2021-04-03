@@ -21,6 +21,7 @@ import { getConnection } from 'typeorm';
 import { User } from '../entities/User';
 import { sendMessageToChannel } from '../utils/sendMessageToChannel';
 import { sendDirectMessage } from '../utils/sendDirectMessage';
+import { createMessage } from '../utils/createMessage';
 
 @InputType()
 class BookInput {
@@ -148,7 +149,7 @@ export class BookResolver {
     }
 
     console.log(
-      '-------------------------done subscription---------------------------'
+      '-------------------------start subscription---------------------------'
     );
     let shared;
     // 組織から本を借りる場合
@@ -170,12 +171,9 @@ export class BookResolver {
         bookId: id,
       }).save();
 
+      const { blocks } = createMessage(subscriber, book, false);
       // console.log('channelId', publisher.slackId);
-      const status = await sendMessageToChannel({
-        user: subscriber,
-        book,
-        channelId: publisher.slackId,
-      });
+      const status = await sendMessageToChannel(publisher.slackId, blocks);
 
       console.log('status', status);
       shared = status === 200;

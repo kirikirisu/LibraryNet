@@ -36,12 +36,13 @@ const main = async () => {
   // await User.delete({});
   // console.log(process.env.DB_NAME)
 
-  // conn.createQueryBuilder()
-  //     .createQueryBuilder()
-  //     .delete()
-  //     .from(SharedBook)
-  //     .where("bookId = :id", {id: 15})
-  //     .execute()
+  // await conn
+  //   .createQueryBuilder()
+  //   .createQueryBuilder()
+  //   .delete()
+  //   .from(SharedBook)
+  //   .where('bookId = :id', { id: 20 })
+  //   .execute();
 
   // await conn
   //   .createQueryBuilder()
@@ -50,7 +51,7 @@ const main = async () => {
   //   .set({
   //     available: 'valid',
   //   })
-  //   .where('id = :id', { id: 21 })
+  //   .where('id = :id', { id: 20 })
   //   .execute();
 
   const app = express();
