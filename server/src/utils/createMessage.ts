@@ -11,10 +11,6 @@ const omitString = (t: string) => {
   return t;
 };
 
-type MessageOption = {
-  returnBook?: boolean;
-};
-
 export const createMessage = (
   subscriber: User,
   book: Book,
