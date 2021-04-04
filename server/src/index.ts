@@ -17,7 +17,8 @@ import { LibraryResolver } from './resolvers/library';
 import { BookResolver } from './resolvers/book';
 import { Book } from './entities/Book';
 import { SharedBook } from './entities/SharedBook';
-import { createSharedBookLoader } from './loader/createSharedBookLoader';
+import { createSubscriberLoader } from './loader/createSubscriberLoader';
+import { createAdminLoader } from './loader/createAdminLoader';
 import { slack } from './handler/slack';
 
 const main = async () => {
@@ -35,21 +36,23 @@ const main = async () => {
   // await User.delete({});
   // console.log(process.env.DB_NAME)
 
-  // conn.createQueryBuilder()
-  //     .createQueryBuilder()
-  //     .delete()
-  //     .from(SharedBook)
-  //     .where("bookId = :id", {id: 15})
-  //     .execute()
+  // await conn
+  //   .createQueryBuilder()
+  //   .createQueryBuilder()
+  //   .delete()
+  //   .from(SharedBook)
+  //   .where('bookId = :id', { id: 20 })
+  //   .execute();
 
-  // conn.createQueryBuilder()
+  // await conn
+  //   .createQueryBuilder()
   //   .createQueryBuilder()
   //   .update(Book)
   //   .set({
-  //     available: "valid"
+  //     available: 'valid',
   //   })
-  //   .where("id = :id", {id: 17})
-  //   .execute()
+  //   .where('id = :id', { id: 20 })
+  //   .execute();
 
   const app = express();
   const RedisStore = connectRedis(session);
@@ -89,7 +92,8 @@ const main = async () => {
     context: ({ req, res }) => ({
       req,
       res,
-      sharedLoader: createSharedBookLoader(),
+      subscriberLoader: createSubscriberLoader(),
+      adminLoader: createAdminLoader(),
     }),
   });
 
@@ -99,8 +103,8 @@ const main = async () => {
     res.send('OK. server working!!');
   });
 
-  app.post('/', async (req, res) => {
-    const status = await slack(req, res);
+  app.post('/', async (req) => {
+    const status = await slack(req);
     console.log('slackHandlerStatus', status);
   });
 

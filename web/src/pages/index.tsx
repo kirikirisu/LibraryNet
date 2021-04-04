@@ -48,9 +48,9 @@ const Index: any = () => {
                 textTransform="uppercase"
                 fontSize="md"
                 letterSpacing="wide"
-                color="teal.600"
+                color={lib.admin.organization ? 'teal.600' : 'purple.400'}
               >
-                Some label
+                {lib.admin.organization ? 'organization' : 'individual'}
               </Text>
               <NextLink href={`/shelf/${lib.adminId}`}>
                 <Link

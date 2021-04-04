@@ -20,6 +20,12 @@ export const sendDirectMessage = async (
 ) => {
   // create room & get channelId or get channelId
   const channelId = await getChannelID(publisher.slackId, subscriber.slackId);
+  const state = {
+    publisherId: publisher.id,
+    subscriberId: subscriber.id,
+    bookId: book.id,
+    ok: null,
+  };
 
   const headers = {
     'Content-Type': 'application/json',
@@ -60,7 +66,7 @@ export const sendDirectMessage = async (
             text: 'OK!!',
           },
           style: 'primary',
-          value: 'valid',
+          value: JSON.stringify({ ...state, ok: true }),
         },
         {
           type: 'button',
@@ -70,7 +76,7 @@ export const sendDirectMessage = async (
             text: 'NO...',
           },
           style: 'danger',
-          value: 'invalid',
+          value: JSON.stringify({ ...state, ok: false }),
         },
       ],
     },

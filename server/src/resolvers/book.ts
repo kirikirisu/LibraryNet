@@ -21,6 +21,7 @@ import { getConnection } from 'typeorm';
 import { User } from '../entities/User';
 import { sendMessageToChannel } from '../utils/sendMessageToChannel';
 import { sendDirectMessage } from '../utils/sendDirectMessage';
+import { createMessage } from '../utils/createMessage';
 
 @InputType()
 class BookInput {
@@ -60,21 +61,9 @@ class SubscribeResponse {
 
 @Resolver(Book)
 export class BookResolver {
-  @FieldResolver(() => Int, { nullable: true })
-  async subscriberId(
-    @Root() book: Book,
-    @Ctx() { sharedLoader }: MyContext
-  ): Promise<number> {
-    // const sharedBook = await SharedBook.findOne({where: { bookId: book.id }})
-
-    return sharedLoader.load(book.id);
-    // const subscriber = await User.findOne({ where: { id: sharedBook?.subscriberId } })
-
-    // if (subscriber) {
-    //   return subscriber
-    // }
-
-    // return null;
+  @FieldResolver(() => User, { nullable: true })
+  async subscriber(@Root() book: Book, @Ctx() { subscriberLoader }: MyContext) {
+    return subscriberLoader.load(book.id);
   }
 
   @Mutation(() => BookResponse)
@@ -138,13 +127,17 @@ export class BookResolver {
       return { errors: 'already subscribed other' };
     }
 
+    if (book?.available === 'asking') {
+      return { errors: 'this book asking' };
+    }
+
     // 組織が本を借りることはない
     if (subscriber.organization) {
       return { errors: 'organization can not subscribe' };
     }
 
     console.log(
-      '-------------------------done subscription---------------------------'
+      '-------------------------start subscription---------------------------'
     );
     let shared;
     // 組織から本を借りる場合
@@ -166,12 +159,9 @@ export class BookResolver {
         bookId: id,
       }).save();
 
+      const { blocks } = createMessage(subscriber, book, false);
       // console.log('channelId', publisher.slackId);
-      const status = await sendMessageToChannel({
-        user: subscriber,
-        book,
-        channelId: publisher.slackId,
-      });
+      const status = await sendMessageToChannel(publisher.slackId, blocks);
 
       console.log('status', status);
       shared = status === 200;
@@ -236,94 +226,49 @@ export class BookResolver {
   //  return status
   // }
 
-  @Query(() => [Book])
-  async books(@Arg('id', () => Int) id: number) {
-    const books = await Book.find({ where: { ownerId: id } });
+  // 貸し出し可能な本のみ返す
+  @Query(() => [Book], { nullable: true })
+  async books(@Arg('id', () => Int) id: number): Promise<Book[]> {
+    // const books = await Book.find({ where: { ownerId: id } });
+    // return books;
+
+    // クエリビルダーでselectを行うと返り値がエイリアスによりBook型でなくってしまう
+    const books = await getConnection().query(
+      `
+       select *
+       from book
+       where book."ownerId" = ${id}
+       and book.available = 'valid'
+      `
+    );
+
     return books;
   }
 
-  @Query(() => Book, { nullable: true })
-  async book(@Arg('id', () => Int) id: number) {
-    const book = await Book.findOne({ where: { id: id } });
-    return book;
+  @Query(() => [Book], { nullable: true })
+  async mySubscribeBooks(@Ctx() { req }: MyContext): Promise<Book[]> {
+    const { userId } = req.session;
+
+    const mySubs = await SharedBook.find({ where: { subscriberId: userId } });
+    const mySubsBookIds = mySubs.map((sub) => sub.bookId);
+
+    const mySubBooks = await Book.findByIds(mySubsBookIds);
+
+    return mySubBooks;
   }
 
-  // @Mutation(() => Boolean, { nullable: true })
-  // async sendDirectMessage() {
-  //   const publisherSlackId = 'U01RA2KRKRT'; // b1801815
-  //   const subscriberSlackId = 'U01SGT2FQSD'; // kiri.com1
-  //   // create room & get channelId or get channelId
-  //   const channelId = await getChannelID(publisherSlackId, subscriberSlackId);
+  @Query(() => [Book], { nullable: true })
+  async myPublishBooks(@Ctx() { req }: MyContext): Promise<Book[]> {
+    const { userId } = req.session;
 
-  //   const headers = {
-  //     'Content-Type': 'application/json',
-  //     Authorization: process.env.SLACK_API_KEY,
-  //   };
+    const myPubBooks = Book.find({ where: { ownerId: userId } });
 
-  //   const block = [
-  //     {
-  //       type: 'header',
-  //       text: {
-  //         type: 'plain_text',
-  //         text: 'bobが下記の本を借りたいようです',
-  //         emoji: true,
-  //       },
-  //     },
-  //     {
-  //       type: 'section',
-  //       text: {
-  //         type: 'mrkdwn',
-  //         text: '<http://hoge.com|Book Info> \n this is description',
-  //       },
-  //       accessory: {
-  //         type: 'image',
-  //         image_url:
-  //           'https://is5-ssl.mzstatic.com/image/thumb/Purple3/v4/d3/72/5c/d3725c8f-c642-5d69-1904-aa36e4297885/source/256x256bb.jpg',
-  //         alt_text: 'book icon',
-  //       },
-  //     },
-  //     {
-  //       type: 'actions',
-  //       elements: [
-  //         {
-  //           type: 'button',
-  //           text: {
-  //             type: 'plain_text',
-  //             emoji: true,
-  //             text: 'OK!!',
-  //           },
-  //           style: 'primary',
-  //           value: 'valid',
-  //         },
-  //         {
-  //           type: 'button',
-  //           text: {
-  //             type: 'plain_text',
-  //             emoji: true,
-  //             text: 'NO...',
-  //           },
-  //           style: 'danger',
-  //           value: 'invalid',
-  //         },
-  //       ],
-  //     },
-  //   ];
+    return myPubBooks;
+  }
 
-  //   const data = {
-  //     channel: channelId,
-  //     blocks: [...block],
-  //   };
-
-  //   const { status } = await axios({
-  //     method: 'post',
-  //     url: 'https://slack.com/api/chat.postMessage',
-  //     data,
-  //     headers,
-  //   });
-  //   console.log('status', status);
-  //   if (status === 200) {
-  //     return true;
-  //   }
-  //   return false;
+  // @Query(() => Book, { nullable: true })
+  // async book(@Arg('id', () => Int) id: number) {
+  //   const book = await Book.findOne({ where: { id: id } });
+  //   return book;
   // }
 }

@@ -18,7 +18,7 @@ export type Query = {
   __typename?: 'Query';
   me?: Maybe<User>;
   librarys?: Maybe<Array<Library>>;
-  books: Array<Book>;
+  books?: Maybe<Array<Book>>;
   book?: Maybe<Book>;
 };
 
@@ -54,6 +54,7 @@ export type Library = {
   adminId: Scalars['Float'];
   createdAt: Scalars['String'];
   updatedAt: Scalars['String'];
+  admin: User;
 };
 
 export type Book = {
@@ -79,7 +80,6 @@ export type Mutation = {
   publishBook: BookResponse;
   subscribeBook: SubscribeResponse;
   returnBook: Scalars['Boolean'];
-  postActionButtons?: Maybe<Scalars['Boolean']>;
 };
 
 
@@ -278,10 +278,10 @@ export type BooksQueryVariables = Exact<{
 
 export type BooksQuery = (
   { __typename?: 'Query' }
-  & { books: Array<(
+  & { books?: Maybe<Array<(
     { __typename?: 'Book' }
-    & Pick<Book, 'id' | 'description' | 'title' | 'img' | 'inforLink' | 'available' | 'ownerId' | 'subscriberId'>
-  )> }
+    & Pick<Book, 'id' | 'description' | 'title' | 'img' | 'inforLink' | 'available' | 'ownerId'>
+  )>> }
 );
 
 export type LibrarysQueryVariables = Exact<{ [key: string]: never; }>;
@@ -292,6 +292,10 @@ export type LibrarysQuery = (
   & { librarys?: Maybe<Array<(
     { __typename?: 'Library' }
     & Pick<Library, 'id' | 'title' | 'description' | 'icon' | 'adminId'>
+    & { admin: (
+      { __typename?: 'User' }
+      & Pick<User, 'id' | 'username' | 'organization'>
+    ) }
   )>> }
 );
 
@@ -575,7 +579,6 @@ export const BooksDocument = gql`
     inforLink
     available
     ownerId
-    subscriberId
   }
 }
     `;
@@ -615,6 +618,11 @@ export const LibrarysDocument = gql`
     description
     icon
     adminId
+    admin {
+      id
+      username
+      organization
+    }
   }
 }
     `;

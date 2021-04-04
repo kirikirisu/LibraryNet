@@ -1,10 +1,6 @@
 import { useRouter } from 'next/router';
 import { Button } from '@chakra-ui/react';
-import {
-  useMeQuery,
-  useReturnBookMutation,
-  useSubscribeBookMutation,
-} from '../generated/graphql';
+import { useMeQuery, useSubscribeBookMutation } from '../generated/graphql';
 import { isServer } from '../utils/isServer';
 
 interface SubscribeReturnBookButtonsProps {
@@ -14,20 +10,14 @@ interface SubscribeReturnBookButtonsProps {
   available: 'valid' | 'asking' | 'invalid';
 }
 
-// 本が借りられない状態ならdisable表示のサブスクボタン => book.availableがinvalid
-// しかし自分がこの本を借りている人なら => 返すボタンを押せる => sharedBook.subscriberIdとdata.me.idで判断
-
-// 本が借りられる状態ならサブスクボタン => book.availableがvalid
-// ログインしていない人 => ボタンは押せるがアラートエラー => 通常のボタン表示
 export const SubscribeReturnBookButtons: React.FC<SubscribeReturnBookButtonsProps> = ({
   bookId,
   publisherId,
-  subscriberId,
   available,
 }) => {
   const router = useRouter();
   const [subscribe] = useSubscribeBookMutation();
-  const [returnBook] = useReturnBookMutation();
+  // const [returnBook] = useReturnBookMutation();
 
   // キャッシュから取得もできる
   // 初回にこのページにこられてしまうとキャッシュがないためnullになってしまう
@@ -45,31 +35,31 @@ export const SubscribeReturnBookButtons: React.FC<SubscribeReturnBookButtonsProp
   if (!data) return <p>can not get data</p>;
   // console.log('sub me', data.me?.id, subscriberId);
 
-  if (data.me?.id === subscriberId) {
-    return (
-      <Button
-        alignSelf="flex-end"
-        mt="6"
-        mr="4"
-        colorScheme="teal"
-        variant="outline"
-        onClick={async () => {
-          try {
-            const res = await returnBook({ variables: { id: bookId } });
-            if (res.data?.returnBook) {
-              router.push('/');
-            } else {
-              alert('faild by any problem');
-            }
-          } catch (err) {
-            alert(err);
-          }
-        }}
-      >
-        return book
-      </Button>
-    );
-  }
+  // if (data.me?.id === subscriberId) {
+  //   return (
+  //     <Button
+  //       alignSelf="flex-end"
+  //       mt="6"
+  //       mr="4"
+  //       colorScheme="teal"
+  //       variant="outline"
+  //       onClick={async () => {
+  //         try {
+  //           const res = await returnBook({ variables: { id: bookId } });
+  //           if (res.data?.returnBook) {
+  //             router.push('/');
+  //           } else {
+  //             alert('faild by any problem');
+  //           }
+  //         } catch (err) {
+  //           alert(err);
+  //         }
+  //       }}
+  //     >
+  //       return book
+  //     </Button>
+  //   );
+  // }
 
   // console.log('me', data.me?.id, publisherId);
   if (data.me?.id === publisherId) {

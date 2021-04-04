@@ -3,15 +3,18 @@ import {
   Arg,
   Ctx,
   Field,
+  FieldResolver,
   Mutation,
   ObjectType,
   Query,
   Resolver,
+  Root,
   UseMiddleware,
 } from 'type-graphql';
 import { FieldError, LibraryInput, MyContext } from '../types';
 import { Library } from '../entities/Library';
 import { validateLibrary } from '../utils/validateLibrary';
+import { User } from '../entities/User';
 
 @ObjectType()
 class LibraryResponse {
@@ -25,6 +28,11 @@ class LibraryResponse {
 
 @Resolver(Library)
 export class LibraryResolver {
+  @FieldResolver(() => User)
+  async admin(@Root() library: Library, @Ctx() { adminLoader }: MyContext) {
+    return adminLoader.load(library.adminId);
+  }
+
   @Mutation(() => LibraryResponse)
   @UseMiddleware(isAuth)
   async createLibrary(
@@ -64,9 +72,8 @@ export class LibraryResolver {
   // updateLibrary(){}
 
   @Query(() => [Library], { nullable: true })
-  async librarys() {
+  async librarys(): Promise<Library[]> {
     const librarys = await Library.find({});
-    console.log(librarys);
 
     return librarys;
   }
