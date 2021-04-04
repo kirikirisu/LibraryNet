@@ -61,21 +61,9 @@ class SubscribeResponse {
 
 @Resolver(Book)
 export class BookResolver {
-  @FieldResolver(() => Int, { nullable: true })
-  async subscriberId(
-    @Root() book: Book,
-    @Ctx() { sharedLoader }: MyContext
-  ): Promise<number> {
-    // const sharedBook = await SharedBook.findOne({where: { bookId: book.id }})
-
-    return sharedLoader.load(book.id);
-    // const subscriber = await User.findOne({ where: { id: sharedBook?.subscriberId } })
-
-    // if (subscriber) {
-    //   return subscriber
-    // }
-
-    // return null;
+  @FieldResolver(() => User, { nullable: true })
+  async subscriber(@Root() book: Book, @Ctx() { subscriberLoader }: MyContext) {
+    return subscriberLoader.load(book.id);
   }
 
   @Mutation(() => BookResponse)
@@ -260,29 +248,27 @@ export class BookResolver {
   @Query(() => [Book], { nullable: true })
   async mySubscribeBooks(@Ctx() { req }: MyContext): Promise<Book[]> {
     const { userId } = req.session;
-    // const mySubs = await getConnection().query(
-    //   `
-    //   select shared_book."bookId"
-    //   from shared_book
-    //   where shared_book."subscriberId" = ${userId}
-    //  `
-    // );
 
     const mySubs = await SharedBook.find({ where: { subscriberId: userId } });
     const mySubsBookIds = mySubs.map((sub) => sub.bookId);
 
     const mySubBooks = await Book.findByIds(mySubsBookIds);
 
-    console.log(mySubBooks);
     return mySubBooks;
   }
 
   @Query(() => [Book], { nullable: true })
-  async myPublishBooks() {}
+  async myPublishBooks(@Ctx() { req }: MyContext): Promise<Book[]> {
+    const { userId } = req.session;
 
-  @Query(() => Book, { nullable: true })
-  async book(@Arg('id', () => Int) id: number) {
-    const book = await Book.findOne({ where: { id: id } });
-    return book;
+    const myPubBooks = Book.find({ where: { ownerId: userId } });
+
+    return myPubBooks;
   }
+
+  // @Query(() => Book, { nullable: true })
+  // async book(@Arg('id', () => Int) id: number) {
+  //   const book = await Book.findOne({ where: { id: id } });
+  //   return book;
+  // }
 }

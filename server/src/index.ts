@@ -17,7 +17,7 @@ import { LibraryResolver } from './resolvers/library';
 import { BookResolver } from './resolvers/book';
 import { Book } from './entities/Book';
 import { SharedBook } from './entities/SharedBook';
-import { createSharedBookLoader } from './loader/createSharedBookLoader';
+import { createSubscriberLoader } from './loader/createSubscriberLoader';
 import { createAdminLoader } from './loader/createAdminLoader';
 import { slack } from './handler/slack';
 
@@ -92,7 +92,7 @@ const main = async () => {
     context: ({ req, res }) => ({
       req,
       res,
-      sharedLoader: createSharedBookLoader(),
+      subscriberLoader: createSubscriberLoader(),
       adminLoader: createAdminLoader(),
     }),
   });

@@ -39,7 +39,7 @@ const PublishBook = () => {
 
   const { title, imageLinks, description, infoLink } = data.volumeInfo;
   const tit = spaceTol(title);
-  const desc = deleteTags(description);
+  const desc = description ? deleteTags(description) : FALLBACK_TXT;
   const imgLin = imageLinks ? imageLinks.smallThumbnail : FALLBACK_IMG;
 
   const publish = async () => {
@@ -48,7 +48,7 @@ const PublishBook = () => {
       description: desc,
       img: imgLin,
       inforLink: infoLink,
-      available: 'vaild',
+      available: 'valid',
     };
 
     try {
@@ -82,7 +82,7 @@ const PublishBook = () => {
               {tit}
             </Heading>
             <Text mt={2} color="gray.500">
-              {description ? omitString(desc) : FALLBACK_TXT}
+              {omitString(desc)}
             </Text>
             <Link
               mt={1}
