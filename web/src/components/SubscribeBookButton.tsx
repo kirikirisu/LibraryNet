@@ -3,14 +3,14 @@ import { Button } from '@chakra-ui/react';
 import { useMeQuery, useSubscribeBookMutation } from '../generated/graphql';
 import { isServer } from '../utils/isServer';
 
-interface SubscribeReturnBookButtonsProps {
+interface SubscribeBookButtonProps {
   bookId: number;
   publisherId: number;
   subscriberId: number;
   available: 'valid' | 'asking' | 'invalid';
 }
 
-export const SubscribeReturnBookButtons: React.FC<SubscribeReturnBookButtonsProps> = ({
+export const SubscribeBookButton: React.FC<SubscribeBookButtonProps> = ({
   bookId,
   publisherId,
   available,

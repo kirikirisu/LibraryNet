@@ -1,0 +1,10 @@
+query MySubscribeBooks {
+  mySubscribeBooks{
+    id
+    title
+    description
+    img
+    inforLink
+    available
+  }
+}

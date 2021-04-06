@@ -19,16 +19,12 @@ export type Query = {
   me?: Maybe<User>;
   librarys?: Maybe<Array<Library>>;
   books?: Maybe<Array<Book>>;
-  book?: Maybe<Book>;
+  mySubscribeBooks?: Maybe<Array<Book>>;
+  myPublishBooks?: Maybe<Array<Book>>;
 };
 
 
 export type QueryBooksArgs = {
-  id: Scalars['Int'];
-};
-
-
-export type QueryBookArgs = {
   id: Scalars['Int'];
 };
 
@@ -68,7 +64,7 @@ export type Book = {
   ownerId: Scalars['Float'];
   createdAt: Scalars['String'];
   updatedAt: Scalars['String'];
-  subscriberId?: Maybe<Scalars['Int']>;
+  subscriber?: Maybe<User>;
 };
 
 export type Mutation = {
@@ -308,6 +304,32 @@ export type MeQuery = (
     { __typename?: 'User' }
     & Pick<User, 'id' | 'username' | 'hasLibrary'>
   )> }
+);
+
+export type MyPublishBooksQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type MyPublishBooksQuery = (
+  { __typename?: 'Query' }
+  & { myPublishBooks?: Maybe<Array<(
+    { __typename?: 'Book' }
+    & Pick<Book, 'id' | 'title' | 'description' | 'img' | 'inforLink' | 'available'>
+    & { subscriber?: Maybe<(
+      { __typename?: 'User' }
+      & Pick<User, 'id' | 'username'>
+    )> }
+  )>> }
+);
+
+export type MySubscribeBooksQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type MySubscribeBooksQuery = (
+  { __typename?: 'Query' }
+  & { mySubscribeBooks?: Maybe<Array<(
+    { __typename?: 'Book' }
+    & Pick<Book, 'id' | 'title' | 'description' | 'img' | 'inforLink' | 'available'>
+  )>> }
 );
 
 
@@ -689,3 +711,85 @@ export function useMeLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<MeQuery
 export type MeQueryHookResult = ReturnType<typeof useMeQuery>;
 export type MeLazyQueryHookResult = ReturnType<typeof useMeLazyQuery>;
 export type MeQueryResult = Apollo.QueryResult<MeQuery, MeQueryVariables>;
+export const MyPublishBooksDocument = gql`
+    query MyPublishBooks {
+  myPublishBooks {
+    id
+    title
+    description
+    img
+    inforLink
+    available
+    subscriber {
+      id
+      username
+    }
+  }
+}
+    `;
+
+/**
+ * __useMyPublishBooksQuery__
+ *
+ * To run a query within a React component, call `useMyPublishBooksQuery` and pass it any options that fit your needs.
+ * When your component renders, `useMyPublishBooksQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useMyPublishBooksQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useMyPublishBooksQuery(baseOptions?: Apollo.QueryHookOptions<MyPublishBooksQuery, MyPublishBooksQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<MyPublishBooksQuery, MyPublishBooksQueryVariables>(MyPublishBooksDocument, options);
+      }
+export function useMyPublishBooksLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<MyPublishBooksQuery, MyPublishBooksQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<MyPublishBooksQuery, MyPublishBooksQueryVariables>(MyPublishBooksDocument, options);
+        }
+export type MyPublishBooksQueryHookResult = ReturnType<typeof useMyPublishBooksQuery>;
+export type MyPublishBooksLazyQueryHookResult = ReturnType<typeof useMyPublishBooksLazyQuery>;
+export type MyPublishBooksQueryResult = Apollo.QueryResult<MyPublishBooksQuery, MyPublishBooksQueryVariables>;
+export const MySubscribeBooksDocument = gql`
+    query MySubscribeBooks {
+  mySubscribeBooks {
+    id
+    title
+    description
+    img
+    inforLink
+    available
+  }
+}
+    `;
+
+/**
+ * __useMySubscribeBooksQuery__
+ *
+ * To run a query within a React component, call `useMySubscribeBooksQuery` and pass it any options that fit your needs.
+ * When your component renders, `useMySubscribeBooksQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useMySubscribeBooksQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useMySubscribeBooksQuery(baseOptions?: Apollo.QueryHookOptions<MySubscribeBooksQuery, MySubscribeBooksQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<MySubscribeBooksQuery, MySubscribeBooksQueryVariables>(MySubscribeBooksDocument, options);
+      }
+export function useMySubscribeBooksLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<MySubscribeBooksQuery, MySubscribeBooksQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<MySubscribeBooksQuery, MySubscribeBooksQueryVariables>(MySubscribeBooksDocument, options);
+        }
+export type MySubscribeBooksQueryHookResult = ReturnType<typeof useMySubscribeBooksQuery>;
+export type MySubscribeBooksLazyQueryHookResult = ReturnType<typeof useMySubscribeBooksLazyQuery>;
+export type MySubscribeBooksQueryResult = Apollo.QueryResult<MySubscribeBooksQuery, MySubscribeBooksQueryVariables>;
