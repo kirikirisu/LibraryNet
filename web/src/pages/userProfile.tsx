@@ -2,23 +2,26 @@ import withApollo from '../utils/withApollo';
 import {
   useMyPublishBooksQuery,
   useMySubscribeBooksQuery,
+  useReturnBookMutation,
 } from '../generated/graphql';
 import { Header } from '../components/Header';
 import {
-  Link,
   Text,
+  Button,
+  Link,
+  Image,
   Box,
   Tabs,
   TabList,
   TabPanels,
   Tab,
   TabPanel,
-  Image,
 } from '@chakra-ui/react';
-import NextLink from 'next/link';
 import { omitString } from '../utils/omitString';
+import { useRouter } from 'next/router';
 
 const UserProfile: React.FC = () => {
+  const router = useRouter();
   const {
     data: subData,
     loading: subLoading,
@@ -31,6 +34,8 @@ const UserProfile: React.FC = () => {
     error: pubError,
   } = useMyPublishBooksQuery();
 
+  const [returnBook] = useReturnBookMutation();
+
   if (subError || pubError) return <p>Error :(</p>;
   if (subLoading || pubLoading) return <p>Loading...</p>;
   if (!subData || !pubData) return <p>can not get data</p>;
@@ -39,9 +44,7 @@ const UserProfile: React.FC = () => {
     <Box>
       <Header />
       <Box
-        overflow="scroll"
         maxW={{ base: '90vw', md: '4xl' }}
-        min={{ base: '80vh', md: '2xl' }}
         mx="auto"
         mt="30"
         py="2"
@@ -62,22 +65,22 @@ const UserProfile: React.FC = () => {
                   key={book.id}
                   p={2}
                   mb={4}
-                  // display="flex"
+                  display="flex"
                   borderRadius="sm"
                   borderWidth="thin"
                   borderColor="gray.200"
+                  position="relative"
                 >
-                  <Box display="flex">
-                    <Box flexShrink={0}>
-                      <Image
-                        width={{ md: 48 }}
-                        // height={{ base: '50%', md: '100%' }}
-                        objectFit="cover"
-                        borderRadius="lg"
-                        src={book.img}
-                        alt="Library image"
-                      />
-                    </Box>
+                  <Box flexShrink={0}>
+                    <Image
+                      width={{ md: 48 }}
+                      objectFit="cover"
+                      borderRadius="lg"
+                      src={book.img}
+                      alt="Book image"
+                    />
+                  </Box>
+                  <Box mt={{ base: 2, md: 0 }} ml={{ base: 4, md: 6 }}>
                     <Text
                       mt={1}
                       display="block"
@@ -87,10 +90,38 @@ const UserProfile: React.FC = () => {
                     >
                       {book.title}
                     </Text>
+                    <Text
+                      display={{ base: 'none', md: 'block' }}
+                      mt={2}
+                      color="gray.500"
+                      fontSize="md"
+                    >
+                      {omitString(book.description)}
+                    </Text>
+                    <Button
+                      position="absolute"
+                      right="4"
+                      bottom="4"
+                      variant="outline"
+                      colorScheme="teal"
+                      onClick={async () => {
+                        try {
+                          const res = await returnBook({
+                            variables: { id: book.id },
+                          });
+                          if (!res.data?.returnBook) {
+                            alert('return book faild');
+                          } else {
+                            router.push('/');
+                          }
+                        } catch (err) {
+                          alert(err);
+                        }
+                      }}
+                    >
+                      本を返す
+                    </Button>
                   </Box>
-                  <Text mt={2} color="gray.500" fontSize="md">
-                    {omitString(book.description)}
-                  </Text>
                 </Box>
               ))}
             </TabPanel>
