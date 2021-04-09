@@ -11,7 +11,7 @@ const omitString = (t: string) => {
   return t;
 };
 
-export const createMessage = (
+export const createChannelMessage = (
   subscriber: User,
   book: Book,
   returnBook: boolean
