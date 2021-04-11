@@ -4,7 +4,7 @@ import { useGetId } from '../../utils/useGetId';
 import withApollo from '../../utils/withApollo';
 import MainContainerWidth from '../../components/MainContainerWidth';
 import { omitString } from '../../utils/omitString';
-import { SubscribeReturnBookButtons } from '../../components/SubscribeReturnBookButtons';
+import { SubscribeBookButton } from '../../components/SubscribeBookButton';
 
 const Shelf: React.FC = () => {
   const intId = useGetId();
@@ -60,7 +60,7 @@ const Shelf: React.FC = () => {
               <Text mt={2} color="gray.500" fontSize="md">
                 {omitString(book.description)}
               </Text>
-              <SubscribeReturnBookButtons
+              <SubscribeBookButton
                 bookId={book.id}
                 publisherId={book.ownerId}
                 available={book.available}

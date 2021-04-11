@@ -10,7 +10,6 @@ import {
   MenuButton,
   MenuList,
   MenuItem,
-  Icon,
 } from '@chakra-ui/react';
 import {
   HamburgerIcon,

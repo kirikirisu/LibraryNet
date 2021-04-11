@@ -1,0 +1,14 @@
+query MyPublishBooks {
+	myPublishBooks{
+    id
+    title
+    description
+    img
+    inforLink
+    available
+    subscriber{
+      id
+      username
+    }
+  }
+}

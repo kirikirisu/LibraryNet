@@ -21,7 +21,8 @@ import { getConnection } from 'typeorm';
 import { User } from '../entities/User';
 import { sendMessageToChannel } from '../utils/sendMessageToChannel';
 import { sendDirectMessage } from '../utils/sendDirectMessage';
-import { createMessage } from '../utils/createMessage';
+import { createChannelMessage } from '../utils/createChannelMessage';
+import { createDirectMessage } from '../utils/createDirectMessage';
 
 @InputType()
 class BookInput {
@@ -62,7 +63,10 @@ class SubscribeResponse {
 @Resolver(Book)
 export class BookResolver {
   @FieldResolver(() => User, { nullable: true })
-  async subscriber(@Root() book: Book, @Ctx() { subscriberLoader }: MyContext) {
+  async subscriber(
+    @Root() book: Book,
+    @Ctx() { subscriberLoader }: MyContext
+  ): Promise<number> {
     return subscriberLoader.load(book.id);
   }
 
@@ -159,7 +163,7 @@ export class BookResolver {
         bookId: id,
       }).save();
 
-      const { blocks } = createMessage(subscriber, book, false);
+      const { blocks } = createChannelMessage(subscriber, book, false);
       // console.log('channelId', publisher.slackId);
       const status = await sendMessageToChannel(publisher.slackId, blocks);
 
@@ -178,7 +182,14 @@ export class BookResolver {
         .where('id = :id', { id: id })
         .execute();
 
-      const status = await sendDirectMessage(publisher, subscriber, book);
+      const { blocks } = createDirectMessage(
+        subscriber,
+        publisher,
+        book,
+        false
+      );
+
+      const status = await sendDirectMessage(publisher, subscriber, blocks);
       console.log('Did send DM?', status);
     }
 
@@ -191,6 +202,14 @@ export class BookResolver {
     @Ctx() { req }: MyContext
   ): Promise<boolean> {
     const { userId } = req.session;
+
+    const subscriber = await User.findOne({ where: { id: userId } });
+    const book = await Book.findOne({ where: { id } });
+    const publisher = await User.findOne({ where: { id: book?.ownerId } });
+
+    if (!subscriber || !book || !publisher) {
+      throw new Error('not found any');
+    }
 
     const shared = await SharedBook.findOne({
       where: { bookId: id, subscriberId: userId },
@@ -215,6 +234,18 @@ export class BookResolver {
       })
       .where('id = :id', { id })
       .execute();
+
+    if (publisher.organization) {
+      const { blocks } = createChannelMessage(subscriber, book, true);
+
+      const status = await sendMessageToChannel(publisher.slackId, blocks);
+      console.log('Did send to chan?', status);
+    } else {
+      const { blocks } = createDirectMessage(subscriber, publisher, book, true);
+
+      const status = await sendDirectMessage(publisher, subscriber, blocks);
+      console.log('Did send DM?', status);
+    }
 
     return true;
   }
