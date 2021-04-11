@@ -3,15 +3,24 @@ import withApollo from '../utils/withApollo';
 import {
   useMyPublishBooksQuery,
   useMySubscribeBooksQuery,
-  MySubscribeBooksQueryHookResult,
-  MySubscribeBooksQueryResult,
 } from '../generated/graphql';
 import { Header } from '../components/Header';
-import { Box, Tabs, TabList, TabPanels, Tab, TabPanel } from '@chakra-ui/react';
+import {
+  Box,
+  Tabs,
+  TabList,
+  TabPanels,
+  Tab,
+  TabPanel,
+  Select,
+} from '@chakra-ui/react';
 import { BookCard } from '../components/BookCard';
-import { HandyBook } from '../types';
+import { BookAvailable, RegularBook } from '../types';
 
-const refleshSort = (allPublishBooks, currentSortType) => {
+const refleshSort = (
+  allPublishBooks: RegularBook[],
+  currentSortType: BookAvailable
+) => {
   console.log('all ', allPublishBooks);
   let sortedPublishBooks;
 
@@ -57,29 +66,30 @@ const UserProfile: React.FC = () => {
 
   const [publishBooks, setPublishBooks] = useState<any>([]);
   const [currentSortType, setCurrentSortType] = useState<
-    'all' | 'valid' | 'asking' | 'invalid'
+    BookAvailable | string
   >('all');
 
+  // 一番最初に走るuseEffectの時はpubDataはロードされていない
+  // そのためpubDataがロード完了した時点でsetPublishBooksする
+  // pubDataは画面ロード時一度しか変化しない
   useEffect(() => {
     if (pubData?.myPublishBooks) {
-      // const pb = pubData.myPublishBooks;
-      const sorted = refleshSort(pubData.myPublishBooks, currentSortType);
-      setPublishBooks(sorted);
-      console.log('set success', sorted);
+      const pb = pubData.myPublishBooks;
+      setPublishBooks(pb);
+      console.log('initial set success', pb);
       return;
     }
-    console.log('skip set');
-  }, [pubData, publishBooks, currentSortType]);
+    console.log('skip initial set');
+  }, [pubData]);
 
-  // useEffect(() => {
-  //   if (pubData?.myPublishBooks) {
-  //     const sorted = refleshSort(pubData.myPublishBooks, currentSortType);
-  //     setPublishBooks(sorted);
-  //     return;
-  //   }
-
-  //   console.log('use effect');
-  // }, [currentSortType]);
+  // 選択されたソートタイプによりソートする
+  useEffect(() => {
+    if (pubData?.myPublishBooks) {
+      const sorted = refleshSort(pubData.myPublishBooks, currentSortType);
+      setPublishBooks(sorted);
+      return;
+    }
+  }, [currentSortType]);
 
   if (subError || pubError) return <p>Error :(</p>;
   if (subLoading || pubLoading) return <p>Loading...</p>;
@@ -114,6 +124,18 @@ const UserProfile: React.FC = () => {
               ))}
             </TabPanel>
             <TabPanel>
+              <Box w="xs" mb="4">
+                <Select
+                  variant="filled"
+                  onChange={(e) => {
+                    setCurrentSortType(e.target.value);
+                  }}
+                >
+                  <option value="all">全て</option>
+                  <option value="valid">公開中</option>
+                  <option value="invalid">貸し出し中</option>
+                </Select>
+              </Box>
               {publishBooks.map((book) => (
                 <BookCard
                   key={book.id}
