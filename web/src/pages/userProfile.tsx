@@ -1,11 +1,46 @@
+import { useState, useEffect } from 'react';
 import withApollo from '../utils/withApollo';
 import {
   useMyPublishBooksQuery,
   useMySubscribeBooksQuery,
+  MySubscribeBooksQueryHookResult,
+  MySubscribeBooksQueryResult,
 } from '../generated/graphql';
 import { Header } from '../components/Header';
 import { Box, Tabs, TabList, TabPanels, Tab, TabPanel } from '@chakra-ui/react';
 import { BookCard } from '../components/BookCard';
+import { HandyBook } from '../types';
+
+const refleshSort = (allPublishBooks, currentSortType) => {
+  console.log('all ', allPublishBooks);
+  let sortedPublishBooks;
+
+  switch (currentSortType) {
+    case 'all':
+      sortedPublishBooks = allPublishBooks;
+      break;
+    case 'valid':
+      sortedPublishBooks = allPublishBooks?.filter(
+        (book) => book.available === 'valid'
+      );
+      break;
+    case 'invalid':
+      sortedPublishBooks = allPublishBooks?.filter(
+        (book) => book.available === 'invalid'
+      );
+      break;
+    case 'asking':
+      sortedPublishBooks = allPublishBooks?.filter(
+        (book) => book.available === 'asking'
+      );
+      break;
+    default:
+      sortedPublishBooks = allPublishBooks;
+  }
+
+  console.log('retrun sorted', sortedPublishBooks);
+  return sortedPublishBooks;
+};
 
 const UserProfile: React.FC = () => {
   const {
@@ -19,6 +54,32 @@ const UserProfile: React.FC = () => {
     loading: pubLoading,
     error: pubError,
   } = useMyPublishBooksQuery();
+
+  const [publishBooks, setPublishBooks] = useState<any>([]);
+  const [currentSortType, setCurrentSortType] = useState<
+    'all' | 'valid' | 'asking' | 'invalid'
+  >('all');
+
+  useEffect(() => {
+    if (pubData?.myPublishBooks) {
+      // const pb = pubData.myPublishBooks;
+      const sorted = refleshSort(pubData.myPublishBooks, currentSortType);
+      setPublishBooks(sorted);
+      console.log('set success', sorted);
+      return;
+    }
+    console.log('skip set');
+  }, [pubData, publishBooks, currentSortType]);
+
+  // useEffect(() => {
+  //   if (pubData?.myPublishBooks) {
+  //     const sorted = refleshSort(pubData.myPublishBooks, currentSortType);
+  //     setPublishBooks(sorted);
+  //     return;
+  //   }
+
+  //   console.log('use effect');
+  // }, [currentSortType]);
 
   if (subError || pubError) return <p>Error :(</p>;
   if (subLoading || pubLoading) return <p>Loading...</p>;
@@ -53,8 +114,12 @@ const UserProfile: React.FC = () => {
               ))}
             </TabPanel>
             <TabPanel>
-              {pubData.myPublishBooks?.map((book) => (
-                <BookCard key={book.id} book={book} />
+              {publishBooks.map((book) => (
+                <BookCard
+                  key={book.id}
+                  book={book}
+                  buttonVariant="returnBook"
+                />
               ))}
             </TabPanel>
           </TabPanels>

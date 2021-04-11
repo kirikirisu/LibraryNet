@@ -2,11 +2,10 @@ import { Book, useReturnBookMutation } from '../generated/graphql';
 import { Text, Button, Image, Box } from '@chakra-ui/react';
 import { omitString } from '../utils/omitString';
 import { useRouter } from 'next/router';
+import { HandyBook } from '../types';
+
 interface BookCardProps {
-  book: Pick<
-    Book,
-    'id' | 'title' | 'description' | 'img' | 'inforLink' | 'available'
-  >;
+  book: HandyBook;
   buttonVariant?: 'returnBook' | 'subscribeBook';
 }
 
