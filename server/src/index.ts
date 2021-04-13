@@ -11,7 +11,7 @@ import cors from 'cors';
 import { User } from './entities/User';
 import { ApolloServer } from 'apollo-server-express';
 import { UserResolver } from './resolvers/user';
-import { COOKIE_NAME, __prod__ } from './constants';
+import { COOKIE_NAME, isDev } from './constants';
 import { Library } from './entities/Library';
 import { LibraryResolver } from './resolvers/library';
 import { BookResolver } from './resolvers/book';
@@ -23,18 +23,19 @@ import { slack } from './handler/slack';
 
 const main = async () => {
   dotenv.config();
+  // console.log(process.env.ENV);
+
   const conn = await createConnection({
     type: 'postgres',
-    database: process.env.DB_NAME,
-    username: process.env.DB_USER_NAME,
-    password: process.env.DB_PASSWORD,
+    url: isDev()
+      ? process.env.DEV_DATABASE_URL
+      : process.env.CONTAINER_DATABASE_URL,
     logging: true,
     synchronize: true,
     entities: [User, Library, Book, SharedBook],
   });
 
   // await User.delete({});
-  // console.log(process.env.DB_NAME)
 
   // await conn
   //   .createQueryBuilder()

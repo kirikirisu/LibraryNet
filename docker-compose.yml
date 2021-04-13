@@ -1,0 +1,21 @@
+version: '3'
+
+services:
+  db:
+    image: postgres:13-alpine
+    ports:
+      - 5050:5432
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: librarynet
+  # server:
+  # build: node
+  # image: node-server
+  # depends_on:
+  # - db
+  # ports:
+  # - 5000:5000
+  # volumes:
+  # - ./node/app:/usr/src/app
+  # command: node index.js
