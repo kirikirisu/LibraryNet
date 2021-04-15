@@ -2,20 +2,34 @@ version: '3'
 
 services:
   db:
-    image: postgres:13-alpine
+    build:
+      context: .
+      dockerfile: ./container/db/Dockerfile
     ports:
       - 5050:5432
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: librarynet
+    volumes:
+      - ./database:/usr/src
+      - librarynet_db_data:/var/lib/postgresql/data
+      # - ./container/db/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+    container_name: librarynet_db
+volumes:
+  librarynet_db_data: {}
   # server:
-  # build: node
-  # image: node-server
-  # depends_on:
-  # - db
-  # ports:
-  # - 5000:5000
-  # volumes:
-  # - ./node/app:/usr/src/app
-  # command: node index.js
+  #   build:
+  #     context: .
+  #     dockerfile: ./container/server/Dockerfile
+  #   depends_on:
+  #     - db
+  #   tty: true
+  #   ports:
+  #     - 8888:8888
+  #   environment:
+  #     - DATABASE_URL=postgres://postgres:postgres@librarynet_db:5432/librarynet
+  #   container_name: node_server
+  #   command: yarn devtsd
+  #   volumes:
+  #     - ./server:/usr/src/app
