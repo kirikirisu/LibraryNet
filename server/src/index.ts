@@ -7,6 +7,7 @@ import Redis from 'ioredis';
 import connectRedis from 'connect-redis';
 import session from 'express-session';
 import cors from 'cors';
+import path from 'path';
 
 import { User } from './entities/User';
 import { ApolloServer } from 'apollo-server-express';
@@ -25,15 +26,18 @@ const main = async () => {
   dotenv.config();
   // console.log(process.env.ENV);
 
-  const conn = await createConnection({
+  await createConnection({
     type: 'postgres',
     url: isDev()
       ? process.env.DEV_DATABASE_URL
       : process.env.CONTAINER_DATABASE_URL,
     logging: true,
     synchronize: true,
+    migrations: [path.join(__dirname, './migrations/*')],
     entities: [User, Library, Book, SharedBook],
   });
+
+  // await conn.runMigrations();
 
   // await User.delete({});
 
