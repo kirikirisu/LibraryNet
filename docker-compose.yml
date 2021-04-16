@@ -16,6 +16,11 @@ services:
       - librarynet_db_data:/var/lib/postgresql/data
       # - ./container/db/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
     container_name: librarynet_db
+  redis:
+    image: redis
+    ports:
+      - 6060:6379
+    container_name: librarynet_redis
   server:
     build:
       context: .
@@ -27,6 +32,7 @@ services:
       - 4000:4000
     environment:
       - DATABASE_URL=postgres://postgres:postgres@librarynet_db:5432/librarynet
+      - REDIS_HOST=librarynet_redis
     # command: yarn dev-tsd
     volumes:
       - ./server:/usr/src/app

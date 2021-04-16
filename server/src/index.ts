@@ -59,7 +59,9 @@ const main = async () => {
 
   const app = express();
   const RedisStore = connectRedis(session);
-  const redis = new Redis();
+  const redisHost = isDev() ? '127.0.0.1' : `${process.env.REDIS_HOST}`;
+  // const redis = new Redis(6379, '192.168.1.1');
+  const redis = new Redis(6379, redisHost);
 
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
