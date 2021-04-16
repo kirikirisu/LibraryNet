@@ -12,7 +12,7 @@ import path from 'path';
 import { User } from './entities/User';
 import { ApolloServer } from 'apollo-server-express';
 import { UserResolver } from './resolvers/user';
-import { COOKIE_NAME, isDev } from './constants';
+import { COOKIE_NAME } from './constants';
 import { Library } from './entities/Library';
 import { LibraryResolver } from './resolvers/library';
 import { BookResolver } from './resolvers/book';
@@ -28,7 +28,7 @@ const main = async () => {
 
   await createConnection({
     type: 'postgres',
-    url: isDev() ? process.env.DEV_DATABASE_URL : process.env.DATABASE_URL,
+    url: process.env.DATABASE_URL,
     logging: true,
     synchronize: true,
     migrations: [path.join(__dirname, './migrations/*')],
@@ -59,7 +59,7 @@ const main = async () => {
 
   const app = express();
   const RedisStore = connectRedis(session);
-  const redisHost = isDev() ? '127.0.0.1' : `${process.env.REDIS_HOST}`;
+  const redisHost = `${process.env.REDIS_HOST}`;
   // const redis = new Redis(6379, '192.168.1.1');
   const redis = new Redis(6379, redisHost);
 

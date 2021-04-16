@@ -27,6 +27,7 @@ services:
       dockerfile: ./container/server/Dockerfile
     depends_on:
       - db
+      - redis
     tty: true
     ports:
       - 4000:4000
@@ -39,7 +40,7 @@ services:
       # 初回起動時にホスト側のnode-modulesを消しておくとうまくいくため
       # ボリュームを使ったnode-modulesのマウントはしない
       # - .server/node-modules:/usr/src/app/node-modules
-    container_name: node_server
+    container_name: librarynet_server
 volumes:
   librarynet_db_data: {}
 
