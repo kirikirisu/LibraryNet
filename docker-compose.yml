@@ -38,6 +38,21 @@ services:
       # ボリュームを使ったnode-modulesのマウントはしない
       # - .server/node-modules:/usr/src/app/node-modules
     container_name: librarynet_server
+  web:
+    build:
+      context: .
+      dockerfile: ./container/web/Dockerfile
+    depends_on:
+      - db
+      - redis
+      - server
+    tty: true
+    ports:
+      - 3000:3000
+    command: yarn dev
+    volumes:
+      - ./web:/usr/src/app
+    container_name: librarynet_web
 volumes:
   librarynet_db_data: {}
 
