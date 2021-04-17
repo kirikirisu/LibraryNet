@@ -12,7 +12,7 @@ import path from 'path';
 import { User } from './entities/User';
 import { ApolloServer } from 'apollo-server-express';
 import { UserResolver } from './resolvers/user';
-import { COOKIE_NAME } from './constants';
+import { COOKIE_NAME, isContainer } from './constants';
 import { Library } from './entities/Library';
 import { LibraryResolver } from './resolvers/library';
 import { BookResolver } from './resolvers/book';
@@ -24,11 +24,14 @@ import { slack } from './handler/slack';
 
 const main = async () => {
   dotenv.config();
-  // console.log(process.env.ENV);
+  console.log(process.env.NODE_ENV);
+  console.log(process.env.CONTAINER_DATABASE_URL);
 
   await createConnection({
     type: 'postgres',
-    url: process.env.DATABASE_URL,
+    url: isContainer()
+      ? process.env.CONTAINER_DATABASE_URL
+      : process.env.LOCAL_DATABASE_URL,
     logging: true,
     synchronize: true,
     migrations: [path.join(__dirname, './migrations/*')],
@@ -59,8 +62,9 @@ const main = async () => {
 
   const app = express();
   const RedisStore = connectRedis(session);
-  const redisHost = `${process.env.REDIS_HOST}`;
-  // const redis = new Redis(6379, '192.168.1.1');
+  const redisHost = isContainer()
+    ? `${process.env.CONTAINER_REDIS_HOST}`
+    : `${process.env.LOCAL_REDIS_HOST}`;
   const redis = new Redis(6379, redisHost);
 
   app.use(express.json());

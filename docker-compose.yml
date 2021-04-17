@@ -31,10 +31,7 @@ services:
     tty: true
     ports:
       - 4000:4000
-    environment:
-      - DATABASE_URL=postgres://postgres:postgres@librarynet_db:5432/librarynet
-      - REDIS_HOST=librarynet_redis
-    # command: yarn dev-tsd
+    command: yarn dev-ts
     volumes:
       - ./server:/usr/src/app
       # 初回起動時にホスト側のnode-modulesを消しておくとうまくいくため
