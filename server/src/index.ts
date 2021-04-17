@@ -7,11 +7,12 @@ import Redis from 'ioredis';
 import connectRedis from 'connect-redis';
 import session from 'express-session';
 import cors from 'cors';
+import path from 'path';
 
 import { User } from './entities/User';
 import { ApolloServer } from 'apollo-server-express';
 import { UserResolver } from './resolvers/user';
-import { COOKIE_NAME, __prod__ } from './constants';
+import { COOKIE_NAME, isContainer } from './constants';
 import { Library } from './entities/Library';
 import { LibraryResolver } from './resolvers/library';
 import { BookResolver } from './resolvers/book';
@@ -23,18 +24,23 @@ import { slack } from './handler/slack';
 
 const main = async () => {
   dotenv.config();
-  const conn = await createConnection({
+  console.log(process.env.NODE_ENV);
+  console.log(process.env.CONTAINER_DATABASE_URL);
+
+  await createConnection({
     type: 'postgres',
-    database: process.env.DB_NAME,
-    username: process.env.DB_USER_NAME,
-    password: process.env.DB_PASSWORD,
+    url: isContainer()
+      ? process.env.CONTAINER_DATABASE_URL
+      : process.env.LOCAL_DATABASE_URL,
     logging: true,
     synchronize: true,
+    migrations: [path.join(__dirname, './migrations/*')],
     entities: [User, Library, Book, SharedBook],
   });
 
+  // await conn.runMigrations();
+
   // await User.delete({});
-  // console.log(process.env.DB_NAME)
 
   // await conn
   //   .createQueryBuilder()
@@ -56,7 +62,10 @@ const main = async () => {
 
   const app = express();
   const RedisStore = connectRedis(session);
-  const redis = new Redis();
+  const redisHost = isContainer()
+    ? `${process.env.CONTAINER_REDIS_HOST}`
+    : `${process.env.LOCAL_REDIS_HOST}`;
+  const redis = new Redis(6379, redisHost);
 
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));

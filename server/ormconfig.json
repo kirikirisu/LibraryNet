@@ -1,0 +1,13 @@
+{
+  "type": "postgres",
+  "host": "localhost",
+  "port": 5432,
+  "username": "postgres",
+  "password": "postgres",
+  "database": "librarynetDB",
+  "entities": ["dist/entities/*.js"],
+  "migrations": ["dist/migratins/*.js"],
+  "cli": {
+    "migrationsDir": "src/migrations"
+}
+}
