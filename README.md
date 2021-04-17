@@ -9,12 +9,11 @@
 ### データのリストア
 
 サンプルのdbデータ(スマプロのnotionに置いときます)を持っている人はリストアします。
+まず、このREADMEと同じ階層にdatabaseフォルダを用意して、そこにbackupファイルを置いてください。
 
 `docker compose exec db bash`
 
   `/usr/local/bin/pg_restore -d librarynet -U postgres /usr/src/dev-initial.backup`
-
-  `psql -U postgres librarynet`
 
 ### 環境変数の設定
 
