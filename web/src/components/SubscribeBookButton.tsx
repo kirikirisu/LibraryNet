@@ -80,11 +80,18 @@ export const SubscribeBookButton: React.FC<SubscribeBookButtonProps> = ({
       disabled={available === 'invalid'}
       onClick={async () => {
         try {
-          const res = await subscribe({ variables: { id: bookId } });
+          const res = await subscribe({
+            variables: { id: bookId },
+            update: (cache, data) => {
+              console.log('cache', cache);
+              console.log('data', data);
+            },
+          });
+
           if (res.data?.subscribeBook.errors) {
             alert(res.data.subscribeBook.errors);
           } else {
-            router.push('/');
+            // router.push('/');
           }
         } catch (err) {
           alert(err);
