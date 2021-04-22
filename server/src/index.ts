@@ -19,7 +19,7 @@ import { BookResolver } from './resolvers/book';
 import { Book } from './entities/Book';
 import { SharedBook } from './entities/SharedBook';
 import { createSubscriberLoader } from './loader/createSubscriberLoader';
-import { createAdminLoader } from './loader/createAdminLoader';
+import { createUserLoader } from './loader/createUserLoader';
 import { slack } from './handler/slack';
 
 const main = async () => {
@@ -102,7 +102,7 @@ const main = async () => {
       req,
       res,
       subscriberLoader: createSubscriberLoader(),
-      adminLoader: createAdminLoader(),
+      userLoader: createUserLoader(),
     }),
   });
 

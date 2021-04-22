@@ -27,8 +27,5 @@ export const sendDirectMessage = async (
     headers,
   });
 
-  if (status === 200) {
-    return true;
-  }
-  return false;
+  return { status };
 };

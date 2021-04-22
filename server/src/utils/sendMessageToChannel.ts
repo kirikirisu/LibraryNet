@@ -17,5 +17,5 @@ export const sendMessageToChannel = async (channelId: string, blocks: any) => {
     data,
   });
 
-  return status;
+  return { status };
 };
