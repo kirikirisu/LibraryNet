@@ -27,10 +27,12 @@ import NextLink from 'next/link';
 import { isServer } from '../utils/isServer';
 import { AiOutlineUser } from 'react-icons/ai';
 import { useRouter } from 'next/router';
+import { useApolloClient } from '@apollo/client';
 
 export const Header: React.FC = () => {
   const { data, loading } = useMeQuery({ skip: isServer() });
   const [logout, { loading: logoutLoading }] = useLogoutMutation();
+  const apolloClient = useApolloClient();
 
   const router = useRouter();
   // const apolloClient = useApolloClient();
@@ -102,17 +104,8 @@ export const Header: React.FC = () => {
               colorScheme="teal"
               isLoading={logoutLoading}
               onClick={async () => {
-                await logout({
-                  update: (cache) => {
-                    cache.writeQuery<MeQuery>({
-                      query: MeDocument,
-                      data: {
-                        __typename: 'Query',
-                        me: null,
-                      },
-                    });
-                  },
-                });
+                await logout();
+                await apolloClient.resetStore();
               }}
             >
               logout
@@ -131,6 +124,7 @@ export const Header: React.FC = () => {
               isLoading={logoutLoading}
               onClick={async () => {
                 await logout();
+                await apolloClient.resetStore();
               }}
             />
           </Flex>

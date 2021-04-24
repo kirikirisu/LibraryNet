@@ -2,10 +2,10 @@ import { Book, useReturnBookMutation } from '../generated/graphql';
 import { Text, Button, Image, Box } from '@chakra-ui/react';
 import { omitString } from '../utils/omitString';
 import { useRouter } from 'next/router';
-import { HandyBook } from '../types';
+import { RegularBook } from '../types';
 
 interface BookCardProps {
-  book: HandyBook;
+  book: RegularBook;
   buttonVariant?: 'returnBook' | 'subscribeBook';
 }
 
@@ -61,11 +61,27 @@ export const BookCard: React.FC<BookCardProps> = ({ book, buttonVariant }) => {
               try {
                 const res = await returnBook({
                   variables: { id: book.id },
+                  update: (cache) => {
+                    cache.modify({
+                      fields: {
+                        mySubscribeBooks(existingBookRefs = [], { readField }) {
+                          console.log('existingBookRefs', existingBookRefs);
+                          const deletedReturnBooks = existingBookRefs.filter(
+                            (bookRef) => {
+                              return book.id !== readField('id', bookRef);
+                            }
+                          );
+
+                          return deletedReturnBooks;
+                        },
+                      },
+                    });
+                  },
                 });
                 if (!res.data?.returnBook) {
                   alert('return book faild');
                 } else {
-                  router.push('/');
+                  // router.push('/');
                 }
               } catch (err) {
                 alert(err);

@@ -25,7 +25,7 @@ const Shelf: React.FC = () => {
       <MainContainerWidth>
         {data.books?.map((book) => {
           // console.log('from parent', book.owner?.organization);
-          if (!book.owner) {
+          if (!book.owner || !intId) {
             console.log('can not get book owner');
             return null;
           }
@@ -70,6 +70,7 @@ const Shelf: React.FC = () => {
                   publisherId={book.ownerId}
                   available={book.available}
                   organization={book.owner.organization}
+                  libraryId={intId}
                 />
               </Flex>
             </Box>

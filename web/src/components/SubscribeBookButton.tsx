@@ -1,6 +1,7 @@
 import { useRouter } from 'next/router';
 import { Button } from '@chakra-ui/react';
 import {
+  BooksDocument,
   useMeQuery,
   useSubscribeBookFromIndividualMutation,
   useSubscribeBookFromOrganizationMutation,
@@ -12,6 +13,7 @@ interface SubscribeBookButtonProps {
   publisherId: number;
   available: 'valid' | 'asking' | 'invalid' | string;
   organization: boolean;
+  libraryId: number;
 }
 
 export const SubscribeBookButton: React.FC<SubscribeBookButtonProps> = ({
@@ -19,9 +21,10 @@ export const SubscribeBookButton: React.FC<SubscribeBookButtonProps> = ({
   publisherId,
   available,
   organization,
+  libraryId,
 }) => {
-  console.log('from button', organization);
-  const router = useRouter();
+  console.log('libraryId', libraryId);
+  // const router = useRouter();
 
   const [
     subscribeFromOrganization,
@@ -58,9 +61,24 @@ export const SubscribeBookButton: React.FC<SubscribeBookButtonProps> = ({
           try {
             const res = await subscribeFromOrganization({
               variables: { id: bookId },
-              update: (cache, data) => {
-                console.log('cache', cache);
-                console.log('data', data);
+              update: (cache, { data }) => {
+                // const subscribeBookFromResposnse =
+                //   data?.subscribeBookFromOrganization.sharedBook;
+                // const modifyId = 'Query:' + `books({"id": ${libraryId}})`;
+
+                cache.modify({
+                  fields: {
+                    books(existingBookRefs = [], { readField }) {
+                      const deletedSubBooks = existingBookRefs.filter(
+                        (bookRef) => {
+                          return bookId !== readField('id', bookRef);
+                        }
+                      );
+
+                      return deletedSubBooks;
+                    },
+                  },
+                });
               },
             });
 
@@ -92,22 +110,33 @@ export const SubscribeBookButton: React.FC<SubscribeBookButtonProps> = ({
           const res = await subscribeFromIndividual({
             variables: { id: bookId },
             update: (cache, data) => {
-              console.log('cache', cache);
-              console.log('data', data);
+              cache.modify({
+                fields: {
+                  books(existingBookRefs = [], { readField }) {
+                    const deletedSubBooks = existingBookRefs.filter(
+                      (bookRef) => {
+                        return bookId !== readField('id', bookRef);
+                      }
+                    );
+
+                    return deletedSubBooks;
+                  },
+                },
+              });
             },
           });
 
           if (res.data?.subscribeBookFromIndividual.errors) {
             alert(res.data?.subscribeBookFromIndividual.errors);
           } else {
-            router.push('/');
+            // router.push('/');
           }
         } catch (err) {
           alert(err);
         }
       }}
     >
-      subscribe book
+      subscribe books
     </Button>
   );
 };

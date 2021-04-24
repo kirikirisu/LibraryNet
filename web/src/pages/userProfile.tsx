@@ -47,7 +47,7 @@ const refleshSort = (
       sortedPublishBooks = allPublishBooks;
   }
 
-  console.log('retrun sorted', sortedPublishBooks);
+  console.log('retrun book sorted', sortedPublishBooks);
   return sortedPublishBooks;
 };
 

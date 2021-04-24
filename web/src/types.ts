@@ -7,4 +7,4 @@ export type RegularBook = Pick<
 
 export type RegularUser = Pick<User, 'id' | 'username'>;
 
-export type BookAvailable = 'all' | 'valid' | 'asking' | 'invalid';
+export type BookAvailable = 'all' | 'valid' | 'asking' | 'invalid' | string;
