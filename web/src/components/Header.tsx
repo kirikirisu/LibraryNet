@@ -43,6 +43,7 @@ export const Header: React.FC = () => {
   let body = null;
   if (loading) {
     body = <Text>Loading...</Text>;
+    // user is not login
   } else if (!data?.me) {
     body = (
       <>
@@ -82,6 +83,7 @@ export const Header: React.FC = () => {
       </>
     );
   } else {
+    // user is login
     body = (
       <>
         <Box display={{ base: 'none', lg: 'block' }}>
@@ -99,6 +101,15 @@ export const Header: React.FC = () => {
                 router.push('/userProfile');
               }}
             />
+            <Button
+              mr="4"
+              colorScheme="teal"
+              onClick={() => {
+                router.push('/searchBook');
+              }}
+            >
+              本を追加する
+            </Button>
             <Button
               variant="outline"
               colorScheme="teal"

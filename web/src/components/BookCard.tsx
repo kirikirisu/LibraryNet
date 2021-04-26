@@ -12,6 +12,7 @@ interface BookCardProps {
 export const BookCard: React.FC<BookCardProps> = ({ book, buttonVariant }) => {
   const router = useRouter();
   const [returnBook] = useReturnBookMutation();
+
   return (
     <Box
       key={book.id}

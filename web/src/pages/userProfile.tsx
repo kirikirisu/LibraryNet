@@ -137,11 +137,7 @@ const UserProfile: React.FC = () => {
                 </Select>
               </Box>
               {publishBooks.map((book) => (
-                <BookCard
-                  key={book.id}
-                  book={book}
-                  buttonVariant="returnBook"
-                />
+                <BookCard key={book.id} book={book} />
               ))}
             </TabPanel>
           </TabPanels>

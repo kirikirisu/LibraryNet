@@ -1,7 +1,6 @@
 import { useRouter } from 'next/router';
 import { Button } from '@chakra-ui/react';
 import {
-  BooksDocument,
   useMeQuery,
   useSubscribeBookFromIndividualMutation,
   useSubscribeBookFromOrganizationMutation,
@@ -23,7 +22,7 @@ export const SubscribeBookButton: React.FC<SubscribeBookButtonProps> = ({
   organization,
   libraryId,
 }) => {
-  console.log('libraryId', libraryId);
+  // console.log('libraryId', libraryId);
   // const router = useRouter();
 
   const [
@@ -109,7 +108,7 @@ export const SubscribeBookButton: React.FC<SubscribeBookButtonProps> = ({
         try {
           const res = await subscribeFromIndividual({
             variables: { id: bookId },
-            update: (cache, data) => {
+            update: (cache) => {
               cache.modify({
                 fields: {
                   books(existingBookRefs = [], { readField }) {
