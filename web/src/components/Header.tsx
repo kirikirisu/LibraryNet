@@ -108,7 +108,7 @@ export const Header: React.FC = () => {
                 router.push('/searchBook');
               }}
             >
-              本を追加する
+              本を公開する
             </Button>
             <Button
               variant="outline"

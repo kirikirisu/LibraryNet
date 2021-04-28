@@ -1,21 +1,25 @@
-import { Book, useReturnBookMutation } from '../generated/graphql';
+import {
+  BookInput,
+  usePublishBookMutation,
+  useReturnBookMutation,
+} from '../generated/graphql';
 import { Text, Button, Image, Box } from '@chakra-ui/react';
 import { omitString } from '../utils/omitString';
 import { useRouter } from 'next/router';
 import { RegularBook } from '../types';
 
 interface BookCardProps {
-  book: RegularBook;
-  buttonVariant?: 'returnBook' | 'subscribeBook';
+  book: RegularBook | BookInput;
+  buttonVariant?: 'returnBook' | 'publishBook';
 }
 
 export const BookCard: React.FC<BookCardProps> = ({ book, buttonVariant }) => {
   const router = useRouter();
   const [returnBook] = useReturnBookMutation();
+  const [publishBook] = usePublishBookMutation();
 
   return (
     <Box
-      key={book.id}
       p={2}
       mb={4}
       display="flex"
@@ -90,6 +94,31 @@ export const BookCard: React.FC<BookCardProps> = ({ book, buttonVariant }) => {
             }}
           >
             本を返す
+          </Button>
+        ) : buttonVariant === 'publishBook' ? (
+          <Button
+            position="absolute"
+            right="4"
+            bottom="4"
+            variant="outline"
+            colorScheme="teal"
+            onClick={async () => {
+              try {
+                const res = await publishBook({
+                  variables: { input: { ...book } },
+                });
+                if (res.data?.publishBook.errors) {
+                  alert(res.data.publishBook.errors);
+                } else if (res.data?.publishBook.book) {
+                  router.push('/');
+                }
+              } catch (err) {
+                // userがログインしていない場合、ここでエラーを拾う
+                alert(err);
+              }
+            }}
+          >
+            本を公開
           </Button>
         ) : null}
       </Box>

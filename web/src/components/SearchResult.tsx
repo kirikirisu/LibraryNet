@@ -10,6 +10,7 @@ interface SearchResultProps {
 
 // const fetcher = (url: string) => axios.get(url).then((res) => res.data);
 const getBooks = async (keyword, startIndex) => {
+  console.log(keyword, startIndex);
   let offset;
   if (startIndex === 0) {
     offset = 0;
@@ -31,20 +32,39 @@ const SR: React.FC<SearchResultProps> = ({ keyword }) => {
   const [allBooks, setAllBooks] = useState<any>([]);
   const [loading, setLoading] = useState<boolean>();
 
+  const fetchData = async () => {
+    setLoading(true);
+    const { items } = await getBooks(keyword, startIndex);
+    setLoading(false);
+    console.log('startIndex', startIndex);
+
+    if (startIndex === 0) {
+      setAllBooks([...items]);
+      return;
+    }
+    setAllBooks([...allBooks, ...items]);
+  };
+
+  const refreshData = () => {
+    // setStartIndexによって一つ目のuseEffectが動くはず
+    setStartIndex(0);
+    setAllBooks([]);
+    // しかし初回にkeywordが変わってもfetchDataされないため
+    // ここにもfetchDataを置いとく
+    fetchData();
+  };
+
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      const { items } = await getBooks(keyword, startIndex);
-      setLoading(false);
-      console.log('data', items);
-      setAllBooks([...allBooks, ...items]);
-    };
     fetchData();
   }, [startIndex]);
 
   useEffect(() => {
-    setAllBooks([]);
-    setStartIndex(0);
+    refreshData();
+
+    // 確実にallBooksを破棄する
+    return () => {
+      setAllBooks([]);
+    };
   }, [keyword]);
 
   console.log('allBooks', allBooks);

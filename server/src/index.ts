@@ -112,7 +112,7 @@ const main = async () => {
     res.send('OK. server working!!');
   });
 
-  app.post('/', async (req) => {
+  app.post('/slackAction', async (req) => {
     const status = await slack(req);
     console.log('slackHandlerStatus', status);
   });
