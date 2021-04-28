@@ -9,6 +9,7 @@ import { FALLBACK_IMG, FALLBACK_TXT } from '../../constants';
 import { BookInput, usePublishBookMutation } from '../../generated/graphql';
 import withApollo from '../../utils/withApollo';
 import { omitString } from '../../utils/omitString';
+import { BookCard } from '../../components/BookCard';
 
 const BOOKS_API_BASE_URL = 'https://www.googleapis.com/books/v1/volumes/';
 
@@ -27,7 +28,6 @@ const fetcher = (url: string) => axios.get(url).then((res) => res.data);
 
 const PublishBook = () => {
   const router = useRouter();
-  const [publishBook] = usePublishBookMutation();
 
   const { id } = router.query;
   const url = BOOKS_API_BASE_URL + id;
@@ -42,75 +42,20 @@ const PublishBook = () => {
   const desc = description ? deleteTags(description) : FALLBACK_TXT;
   const imgLin = imageLinks ? imageLinks.smallThumbnail : FALLBACK_IMG;
 
-  const publish = async () => {
-    const sendObj: BookInput = {
-      title: tit,
-      description: desc,
-      img: imgLin,
-      inforLink: infoLink,
-      available: 'valid',
-    };
-
-    try {
-      const res = await publishBook({ variables: { input: { ...sendObj } } });
-      if (res.data?.publishBook.errors) {
-        alert(res.data.publishBook.errors);
-      } else if (res.data?.publishBook.book) {
-        router.push('/');
-      }
-    } catch (err) {
-      // userがログインしていない場合、ここでエラーを拾う
-      alert(err);
-    }
+  const book: BookInput = {
+    title: tit,
+    description: desc,
+    img: imgLin,
+    inforLink: infoLink,
+    available: 'valid',
   };
 
   return (
-    <Box
-      mt="10"
-      maxW="4xl"
-      mx="auto"
-      py="4"
-      px="2"
-      borderWidth="thin"
-      borderColor="gray.200"
-    >
-      <Flex>
-        <Img w="30%" objectFit="cover" src={imgLin} alt="book image" />
-        <Box ml="4" w="70%">
-          <Flex direction="column">
-            <Heading size="lg" isTruncated>
-              {tit}
-            </Heading>
-            <Text mt={2} color="gray.500">
-              {omitString(desc)}
-            </Text>
-            <Link
-              mt={1}
-              display="block"
-              fontSize="lg"
-              lineHeight="normal"
-              fontWeight="bold"
-              textTransform="uppercase"
-              letterSpacing="wide"
-              color="teal.600"
-              href={infoLink}
-            >
-              more info
-            </Link>
-            <Button
-              alignSelf="flex-end"
-              mt="6"
-              mr="4"
-              colorScheme="teal"
-              variant="outline"
-              onClick={publish}
-            >
-              publish
-            </Button>
-          </Flex>
-        </Box>
-      </Flex>
-    </Box>
+    <Flex height="100vh" widht="100vw" justify="center" align="center">
+      <Box width={{ base: 'full', md: '4xl' }}>
+        <BookCard book={book} buttonVariant="publishBook" />
+      </Box>
+    </Flex>
   );
 };
 

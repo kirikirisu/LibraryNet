@@ -1,0 +1,19 @@
+mutation SubscribeBookFromOrganization($id: Int!) {
+  subscribeBookFromOrganization(id: $id) {
+    errors
+    sharedBook{
+      id
+      description
+      title
+      img
+      inforLink
+      available
+      ownerId
+      owner{
+        id
+        username
+        organization
+      }
+    }
+  }
+}

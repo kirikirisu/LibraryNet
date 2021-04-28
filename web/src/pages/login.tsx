@@ -20,7 +20,6 @@ const Login: React.FC = () => {
           const response = await login({
             variables: { ...values },
             // キャッシュを書き換える
-            // loginで返ってきたdataをmeクエリのキャッシュに書き込む
             update: (cache, { data }) => {
               cache.writeQuery<MeQuery>({
                 query: MeDocument,
@@ -29,10 +28,9 @@ const Login: React.FC = () => {
                   me: data?.login.user,
                 },
               });
-
-              // const hasLib = cache.readQuery()
             },
           });
+
           if (response.data?.login.errors) {
             setErrors(toErrorMap(response.data.login.errors));
           } else if (response.data?.login.user) {

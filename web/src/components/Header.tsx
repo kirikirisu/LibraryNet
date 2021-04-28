@@ -27,10 +27,12 @@ import NextLink from 'next/link';
 import { isServer } from '../utils/isServer';
 import { AiOutlineUser } from 'react-icons/ai';
 import { useRouter } from 'next/router';
+import { useApolloClient } from '@apollo/client';
 
 export const Header: React.FC = () => {
   const { data, loading } = useMeQuery({ skip: isServer() });
   const [logout, { loading: logoutLoading }] = useLogoutMutation();
+  const apolloClient = useApolloClient();
 
   const router = useRouter();
   // const apolloClient = useApolloClient();
@@ -41,6 +43,7 @@ export const Header: React.FC = () => {
   let body = null;
   if (loading) {
     body = <Text>Loading...</Text>;
+    // user is not login
   } else if (!data?.me) {
     body = (
       <>
@@ -80,6 +83,7 @@ export const Header: React.FC = () => {
       </>
     );
   } else {
+    // user is login
     body = (
       <>
         <Box display={{ base: 'none', lg: 'block' }}>
@@ -98,21 +102,21 @@ export const Header: React.FC = () => {
               }}
             />
             <Button
+              mr="4"
+              colorScheme="teal"
+              onClick={() => {
+                router.push('/searchBook');
+              }}
+            >
+              本を公開する
+            </Button>
+            <Button
               variant="outline"
               colorScheme="teal"
               isLoading={logoutLoading}
               onClick={async () => {
-                await logout({
-                  update: (cache) => {
-                    cache.writeQuery<MeQuery>({
-                      query: MeDocument,
-                      data: {
-                        __typename: 'Query',
-                        me: null,
-                      },
-                    });
-                  },
-                });
+                await logout();
+                await apolloClient.resetStore();
               }}
             >
               logout
@@ -131,6 +135,7 @@ export const Header: React.FC = () => {
               isLoading={logoutLoading}
               onClick={async () => {
                 await logout();
+                await apolloClient.resetStore();
               }}
             />
           </Flex>

@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { Session, SessionData } from 'express-session';
 import { Field, InputType, ObjectType } from 'type-graphql';
 import { createSubscriberLoader } from './loader/createSubscriberLoader';
-import { createAdminLoader } from './loader/createAdminLoader';
+// import { createAdminLoader } from './loader/createAdminLoader';
 
 export type MyContext = {
   req: Request & {
@@ -10,7 +10,7 @@ export type MyContext = {
   };
   res: Response;
   subscriberLoader: ReturnType<typeof createSubscriberLoader>;
-  adminLoader: ReturnType<typeof createAdminLoader>;
+  userLoader: any;
 };
 
 @ObjectType()
