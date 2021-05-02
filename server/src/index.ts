@@ -19,7 +19,7 @@ import { BookResolver } from './resolvers/book';
 import { Book } from './entities/Book';
 import { SharedBook } from './entities/SharedBook';
 import { createSubscriberLoader } from './loader/createSubscriberLoader';
-import { createAdminLoader } from './loader/createAdminLoader';
+import { createUserLoader } from './loader/createUserLoader';
 import { slack } from './handler/slack';
 import { AllowList } from './entities/AllowList';
 
@@ -103,7 +103,7 @@ const main = async () => {
       req,
       res,
       subscriberLoader: createSubscriberLoader(),
-      adminLoader: createAdminLoader(),
+      userLoader: createUserLoader(),
     }),
   });
 
@@ -113,7 +113,7 @@ const main = async () => {
     res.send('OK. server working!!');
   });
 
-  app.post('/', async (req) => {
+  app.post('/slackAction', async (req) => {
     const status = await slack(req);
     console.log('slackHandlerStatus', status);
   });

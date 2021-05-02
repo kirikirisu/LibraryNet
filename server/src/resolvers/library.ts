@@ -29,8 +29,8 @@ class LibraryResponse {
 @Resolver(Library)
 export class LibraryResolver {
   @FieldResolver(() => User)
-  async admin(@Root() library: Library, @Ctx() { adminLoader }: MyContext) {
-    return adminLoader.load(library.adminId);
+  async admin(@Root() library: Library, @Ctx() { userLoader }: MyContext) {
+    return userLoader.load(library.adminId);
   }
 
   @Mutation(() => LibraryResponse)

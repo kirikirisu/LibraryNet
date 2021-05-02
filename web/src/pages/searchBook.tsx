@@ -7,7 +7,7 @@ const SearchBook: React.FC = () => {
   const [searchValue, setSearchValue] = React.useState('');
   const handleChange = (event: any) => setSearchValue(event.target.value);
 
-  const [keyword, setKeyword] = React.useState('技術書');
+  const [keyword, setKeyword] = React.useState('プログラミング');
   const handlePush = () => setKeyword(searchValue);
 
   return (
@@ -19,8 +19,15 @@ const SearchBook: React.FC = () => {
             onChange={handleChange}
             placeholder="Search Book"
             focusBorderColor="teal.500"
+            onKeyPress={(e) => {
+              if (e.key == 'Enter') {
+                e.preventDefault();
+                handlePush();
+              }
+            }}
           />
           <Button
+            type="submit"
             ml={2}
             colorScheme="teal"
             isLoading={false}

@@ -47,7 +47,7 @@ const refleshSort = (
       sortedPublishBooks = allPublishBooks;
   }
 
-  console.log('retrun sorted', sortedPublishBooks);
+  console.log('retrun book sorted', sortedPublishBooks);
   return sortedPublishBooks;
 };
 
@@ -137,11 +137,7 @@ const UserProfile: React.FC = () => {
                 </Select>
               </Box>
               {publishBooks.map((book) => (
-                <BookCard
-                  key={book.id}
-                  book={book}
-                  buttonVariant="returnBook"
-                />
+                <BookCard key={book.id} book={book} />
               ))}
             </TabPanel>
           </TabPanels>

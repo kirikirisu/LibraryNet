@@ -34,9 +34,8 @@ services:
     command: yarn dev-ts
     volumes:
       - ./server:/usr/src/app
-      # 初回起動時にホスト側のnode-modulesを消しておくとうまくいくため
-      # ボリュームを使ったnode-modulesのマウントはしない
-      # - .server/node-modules:/usr/src/app/node-modules
+      # https://medium.com/@semur.nabiev/how-to-make-docker-compose-volumes-ignore-the-node-modules-directory-99f9ec224561
+      - /usr/src/app/node_modules
     container_name: librarynet_server
   web:
     build:
@@ -52,6 +51,7 @@ services:
     command: yarn dev
     volumes:
       - ./web:/usr/src/app
+      - /usr/src/app/node_modules
     container_name: librarynet_web
 volumes:
   librarynet_db_data: {}

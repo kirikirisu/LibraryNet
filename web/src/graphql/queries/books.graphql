@@ -7,5 +7,10 @@ query Books($id: Int!) {
     inforLink
     available
     ownerId
+    owner{
+      id
+      username
+      organization
+    }
   }
 }

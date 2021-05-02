@@ -52,12 +52,21 @@ class BookResponse {
 }
 
 @ObjectType()
-class SubscribeResponse {
+class SubscribeBookFromOrganizationResponse {
+  @Field(() => String, { nullable: true })
+  errors?: string;
+
+  @Field(() => Book, { nullable: true })
+  sharedBook?: Book;
+}
+
+@ObjectType()
+class SubscribeBookFromIndividualResponse {
   @Field(() => String, { nullable: true })
   errors?: string;
 
   @Field(() => Boolean, { nullable: true })
-  shared?: boolean;
+  sendDM?: boolean;
 }
 
 @Resolver(Book)
@@ -68,6 +77,14 @@ export class BookResolver {
     @Ctx() { subscriberLoader }: MyContext
   ): Promise<number> {
     return subscriberLoader.load(book.id);
+  }
+
+  @FieldResolver(() => User, { nullable: true })
+  async owner(
+    @Root() book: Book,
+    @Ctx() { userLoader }: MyContext
+  ): Promise<number> {
+    return userLoader.load(book.ownerId);
   }
 
   @Mutation(() => BookResponse)
@@ -93,32 +110,20 @@ export class BookResolver {
     return { book };
   }
 
-  @Mutation(() => SubscribeResponse)
+  @Mutation(() => SubscribeBookFromOrganizationResponse)
   @UseMiddleware(isAuth)
-  async subscribeBook(
+  async subscribeBookFromOrganization(
     @Arg('id', () => Int) id: number,
     @Ctx() { req }: MyContext
-  ): Promise<SubscribeResponse> {
+  ): Promise<SubscribeBookFromOrganizationResponse> {
     const { userId } = req.session;
 
     const subscriber = await User.findOne({ where: { id: userId } });
     const book = await Book.findOne({ where: { id } });
     const publisher = await User.findOne({ where: { id: book?.ownerId } });
 
-    // const library = await Library.findOne({ where: { adminId: book?.ownerId }})
-    // 借りる本が組織からなのか個人からなのか
-    // libraryからorganizationを参照するより、userから参照したい
-    // publisher.organization
-
-    // 借りる人が組織なのか個人なのか(組織は本を借りることができない)
-    // TODO:userからorganizationフラグを参照したい
-
-    if (userId === book?.ownerId) {
-      return { errors: 'can not subscribe own book' };
-    }
-
     if (!book) {
-      return { errors: 'can not find user' };
+      return { errors: 'can not find book' };
     }
     if (!subscriber) {
       return { errors: 'can not find subscriber' };
@@ -126,74 +131,81 @@ export class BookResolver {
     if (!publisher) {
       return { errors: 'can not find publisher' };
     }
-
-    if (book?.available === 'invalid') {
-      return { errors: 'already subscribed other' };
-    }
-
-    if (book?.available === 'asking') {
-      return { errors: 'this book asking' };
-    }
-
     // 組織が本を借りることはない
     if (subscriber.organization) {
       return { errors: 'organization can not subscribe' };
     }
 
-    console.log(
-      '-------------------------start subscription---------------------------'
-    );
-    let shared;
-    // 組織から本を借りる場合
-    if (publisher.organization) {
-      // change book state
-      await getConnection()
-        .createQueryBuilder()
-        .update(Book)
-        .set({
-          available: 'invalid',
-        })
-        .where('id = :id', { id: id })
-        .execute();
+    await getConnection()
+      .createQueryBuilder()
+      .update(Book)
+      .set({
+        available: 'invalid',
+      })
+      .where('id = :id', { id: id })
+      .execute();
 
-      // insert & select
-      await SharedBook.create({
-        publisherId: book?.ownerId,
-        subscriberId: userId,
-        bookId: id,
-      }).save();
+    // insert & select
+    await SharedBook.create({
+      publisherId: book?.ownerId,
+      subscriberId: userId,
+      bookId: id,
+    }).save();
 
-      const { blocks } = createChannelMessage(subscriber, book, false);
-      // console.log('channelId', publisher.slackId);
-      const status = await sendMessageToChannel(publisher.slackId, blocks);
+    const { blocks } = createChannelMessage(subscriber, book, false);
+    // console.log('channelId', publisher.slackId);
+    const { status } = await sendMessageToChannel(publisher.slackId, blocks);
 
-      console.log('status', status);
-      shared = status === 200;
+    if (status !== 200) {
+      return { errors: 'con not send message to slack channel' };
+    }
+    return { sharedBook: book };
+  }
 
-      // 個人から本を借りる場合
-    } else {
-      // change book state
-      await getConnection()
-        .createQueryBuilder()
-        .update(Book)
-        .set({
-          available: 'asking',
-        })
-        .where('id = :id', { id: id })
-        .execute();
+  @Mutation(() => SubscribeBookFromIndividualResponse)
+  @UseMiddleware(isAuth)
+  async subscribeBookFromIndividual(
+    @Arg('id', () => Int) id: number,
+    @Ctx() { req }: MyContext
+  ): Promise<SubscribeBookFromIndividualResponse> {
+    const { userId } = req.session;
 
-      const { blocks } = createDirectMessage(
-        subscriber,
-        publisher,
-        book,
-        false
-      );
+    const subscriber = await User.findOne({ where: { id: userId } });
+    const book = await Book.findOne({ where: { id } });
+    const publisher = await User.findOne({ where: { id: book?.ownerId } });
 
-      const status = await sendDirectMessage(publisher, subscriber, blocks);
-      console.log('Did send DM?', status);
+    if (!book) {
+      return { errors: 'can not find book' };
+    }
+    if (!subscriber) {
+      return { errors: 'can not find subscriber' };
+    }
+    if (!publisher) {
+      return { errors: 'can not find publisher' };
+    }
+    // 組織が本を借りることはない
+    if (subscriber.organization) {
+      return { errors: 'organization can not subscribe' };
     }
 
-    return { shared };
+    await getConnection()
+      .createQueryBuilder()
+      .update(Book)
+      .set({
+        available: 'asking',
+      })
+      .where('id = :id', { id: id })
+      .execute();
+
+    const { blocks } = createDirectMessage(subscriber, publisher, book, false);
+
+    const { status } = await sendDirectMessage(publisher, subscriber, blocks);
+
+    if (status !== 200) {
+      return { errors: 'can not send direct message to slack' };
+    }
+    // sendDM or askingBookId
+    return { sendDM: true };
   }
 
   @Mutation(() => Boolean)

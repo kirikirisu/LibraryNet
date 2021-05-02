@@ -5,6 +5,7 @@ const apolloClient = new ApolloClient({
   uri: 'http://localhost:4000/graphql',
   credentials: 'include',
   cache: new InMemoryCache(),
+  connectToDevTools: true,
 });
 
 export default withApollo(apolloClient);

@@ -1,0 +1,6 @@
+mutation SubscribeBookFromIndividual($id: Int!) {
+  subscribeBookFromIndividual(id: $id) {
+    errors
+    sendDM
+  }
+}
