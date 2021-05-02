@@ -21,11 +21,12 @@ import { SharedBook } from './entities/SharedBook';
 import { createSubscriberLoader } from './loader/createSubscriberLoader';
 import { createAdminLoader } from './loader/createAdminLoader';
 import { slack } from './handler/slack';
+import { AllowList } from './entities/AllowList';
 
 const main = async () => {
   dotenv.config();
-  console.log(process.env.NODE_ENV);
-  console.log(process.env.CONTAINER_DATABASE_URL);
+  // console.log(process.env.NODE_ENV);
+  // console.log(process.env.CONTAINER_DATABASE_URL);
 
   await createConnection({
     type: 'postgres',
@@ -35,7 +36,7 @@ const main = async () => {
     logging: true,
     synchronize: true,
     migrations: [path.join(__dirname, './migrations/*')],
-    entities: [User, Library, Book, SharedBook],
+    entities: [User, Library, Book, SharedBook, AllowList],
   });
 
   // await conn.runMigrations();
