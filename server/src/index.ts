@@ -22,6 +22,8 @@ import { createSubscriberLoader } from './loader/createSubscriberLoader';
 import { createUserLoader } from './loader/createUserLoader';
 import { slack } from './handler/slack';
 import { AllowList } from './entities/AllowList';
+import { Administor } from './entities/Administor';
+import { getAdminToken } from './handler/getAdminToken';
 
 const main = async () => {
   dotenv.config();
@@ -36,7 +38,7 @@ const main = async () => {
     logging: true,
     synchronize: true,
     migrations: [path.join(__dirname, './migrations/*')],
-    entities: [User, Library, Book, SharedBook, AllowList],
+    entities: [User, Library, Book, SharedBook, Administor, AllowList],
   });
 
   // await conn.runMigrations();
@@ -116,6 +118,28 @@ const main = async () => {
   app.post('/slackAction', async (req) => {
     const status = await slack(req);
     console.log('slackHandlerStatus', status);
+  });
+
+  // app.post('/setAdmin', async (_, res) => {
+  //   const username = 'smp';
+  //   const password = 'hoge';
+
+  //   const hashedPassword = await argon2.hash(password);
+
+  //   pgConnection
+  //     .createQueryBuilder()
+  //     .insert()
+  //     .into(Administor)
+  //     .values({ username: username, password: hashedPassword })
+  //     .execute();
+
+  //   res.end();
+  // });
+
+  app.post('/getAdminToken', (req, res) => getAdminToken(req, res));
+
+  app.post('/addAllowUser', (_, res) => {
+    res.send('OK. server working!!');
   });
 
   app.listen(4000, () => {
