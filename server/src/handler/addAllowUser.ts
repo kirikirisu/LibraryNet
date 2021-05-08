@@ -1,5 +1,6 @@
 import express from 'express';
 import { Redis } from 'ioredis';
+import { AllowList } from '../entities/AllowList';
 import { ADMINISTOR_TOKEN_PREFIX } from '../constants';
 
 export const addAllowUser = async (
@@ -33,7 +34,10 @@ export const addAllowUser = async (
 
     if (username) {
       console.log(redisKey, username);
-      res.send('you can add user');
+
+      await AllowList.create({ email }).save();
+
+      res.send('complete add user email');
       res.end();
       return;
     }

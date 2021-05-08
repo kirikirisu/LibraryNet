@@ -1,20 +1,35 @@
+import { AllowList } from '../entities/AllowList';
 import { RegisterInput } from '../types';
 
-export const validateRejister = (options: RegisterInput) => {
+export const validateRejister = async (options: RegisterInput) => {
+  const { email } = options;
+  const allowUser = await AllowList.findOne({
+    where: { email: email },
+  });
+
+  if (!allowUser && email.includes('@')) {
+    return [
+      {
+        field: 'email',
+        message: 'このメールアドレスは登録できません',
+      },
+    ];
+  }
+
+  if (!email.includes('@')) {
+    return [
+      {
+        field: 'email',
+        message: 'invalid email',
+      },
+    ];
+  }
+
   if (options.username.length <= 2) {
     return [
       {
         field: 'username',
         message: 'length must be greater than 2',
-      },
-    ];
-  }
-
-  if (!options.email.includes('@')) {
-    return [
-      {
-        field: 'email',
-        message: 'invalid email',
       },
     ];
   }
