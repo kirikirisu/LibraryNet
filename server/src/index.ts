@@ -24,6 +24,7 @@ import { slack } from './handler/slack';
 import { AllowList } from './entities/AllowList';
 import { Administor } from './entities/Administor';
 import { getAdminToken } from './handler/getAdminToken';
+import { addAllowUser } from './handler/addAllowUser';
 
 const main = async () => {
   dotenv.config();
@@ -136,11 +137,9 @@ const main = async () => {
   //   res.end();
   // });
 
-  app.post('/getAdminToken', (req, res) => getAdminToken(req, res));
+  app.post('/getAdminToken', (req, res) => getAdminToken(req, res, redis));
 
-  app.post('/addAllowUser', (_, res) => {
-    res.send('OK. server working!!');
-  });
+  app.post('/addAllowUser', (req, res) => addAllowUser(req, res, redis));
 
   app.listen(4000, () => {
     console.log('server start on port 4000');

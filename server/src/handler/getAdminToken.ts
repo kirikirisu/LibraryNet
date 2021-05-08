@@ -2,13 +2,13 @@ import express from 'express';
 import argon2 from 'argon2';
 import { Administor } from '../entities/Administor';
 import { v4 } from 'uuid';
-// import { Redis } from 'ioredis';
-// import { ADMINISTOR_TOKEN_PREFIX } from '../constants';
+import { Redis } from 'ioredis';
+import { ADMINISTOR_TOKEN_PREFIX } from '../constants';
 
 export const getAdminToken = async (
   req: express.Request,
-  res: express.Response
-  // redis: Redis
+  res: express.Response,
+  redis: Redis
 ) => {
   try {
     const { username, password: rawPass } = req.body;
@@ -28,14 +28,14 @@ export const getAdminToken = async (
     }
 
     const token = v4();
-    // const expireMiniutes = 1000 * 60 * 5;
+    const expireMiniutes = 60 * 5;
 
-    // await redis.set(
-    //   ADMINISTOR_TOKEN_PREFIX + token,
-    //   administor.username,
-    //   'ex',
-    //   expireMiniutes
-    // );
+    await redis.set(
+      ADMINISTOR_TOKEN_PREFIX + token,
+      administor.username,
+      'EX',
+      expireMiniutes
+    );
 
     res.send(
       `success!! you could get token. \n this token has an expiration date of 5 miniutes. \n \n ${token} \n`
