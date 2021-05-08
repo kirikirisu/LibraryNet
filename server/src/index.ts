@@ -21,11 +21,15 @@ import { SharedBook } from './entities/SharedBook';
 import { createSubscriberLoader } from './loader/createSubscriberLoader';
 import { createUserLoader } from './loader/createUserLoader';
 import { slack } from './handler/slack';
+import { AllowList } from './entities/AllowList';
+import { Administor } from './entities/Administor';
+import { getAdminToken } from './handler/getAdminToken';
+import { addAllowUser } from './handler/addAllowUser';
 
 const main = async () => {
   dotenv.config();
-  console.log(process.env.NODE_ENV);
-  console.log(process.env.CONTAINER_DATABASE_URL);
+  // console.log(process.env.NODE_ENV);
+  // console.log(process.env.CONTAINER_DATABASE_URL);
 
   await createConnection({
     type: 'postgres',
@@ -35,7 +39,7 @@ const main = async () => {
     logging: true,
     synchronize: true,
     migrations: [path.join(__dirname, './migrations/*')],
-    entities: [User, Library, Book, SharedBook],
+    entities: [User, Library, Book, SharedBook, Administor, AllowList],
   });
 
   // await conn.runMigrations();
@@ -116,6 +120,26 @@ const main = async () => {
     const status = await slack(req);
     console.log('slackHandlerStatus', status);
   });
+
+  // app.post('/setAdmin', async (_, res) => {
+  //   const username = 'smp';
+  //   const password = 'hoge';
+
+  //   const hashedPassword = await argon2.hash(password);
+
+  //   pgConnection
+  //     .createQueryBuilder()
+  //     .insert()
+  //     .into(Administor)
+  //     .values({ username: username, password: hashedPassword })
+  //     .execute();
+
+  //   res.end();
+  // });
+
+  app.post('/getAdminToken', (req, res) => getAdminToken(req, res, redis));
+
+  app.post('/addAllowUser', (req, res) => addAllowUser(req, res, redis));
 
   app.listen(4000, () => {
     console.log('server start on port 4000');
